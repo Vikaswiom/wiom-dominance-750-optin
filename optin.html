@@ -616,15 +616,18 @@
     }
   };
 
-  /* ═══════════════ CleverTap analytics — 4 events, max 6 fires per user ═══════════════
+  /* ═══════════════ CleverTap analytics — 5 events, max 5 fires per user ═══════════════
      Payout750_Viewed     1x    in-app shown (cover impression)
      Payout750_Progress   <=2x  {milestone: 'content_opened' | 'reached_choice'}
-     Payout750_Confirmed  1x    {choice:'new'|'later', lang, lang_toggles, selection_changes, seconds}  CONVERSION
-     Payout750_Closed     1x    {exit, choice, last_selected, reached_choice, lang, lang_toggles, seconds}  terminal
+     Payout750_Confirmed  1x    OPT-IN confirmed  {choice:'new', ...}   CONVERSION
+     Payout750_Declined   1x    "अभी नहीं" confirmed  {choice:'later', ...}
+     Payout750_Closed     1x    {exit, choice, last_selected, reached_choice, lang,
+                                 lang_toggles, seconds, api_status, api_error, api_http}
 
+     Confirmed and Declined are mutually exclusive — exactly one of them can ever fire.
      Deliberately NOT separate events: language toggles (counted -> lang_toggles),
      radio selections (counted -> selection_changes + last_selected), scroll depth
-     beyond the choice section. Everything rides as properties on the 4 events above.
+     beyond the choice section. Everything else rides as properties on the events above.
      ═══════════════════════════════════════════════════════════════════════════════════ */
 
   var EV = 'Payout750_';
@@ -855,8 +858,8 @@
       confirmNew.classList.remove('show');
     }
 
-    /* CONVERSION — the one event the campaign is measured on */
-    track('Confirmed', {
+    /* opt-in and decline are separate events — Confirmed is the conversion */
+    track(confirmed === 'new' ? 'Confirmed' : 'Declined', {
       choice: confirmed,
       lang: lang,
       lang_toggles: langToggles,

@@ -27,13 +27,15 @@ makes no API call. Retries 3x on network/5xx, never on 4xx. QA host:
 
 The gateway must allow the `https://vikaswiom.github.io` origin for the fetch to succeed.
 
-## CleverTap events (4 names, max 6 fires per user)
+## CleverTap events (5 names, max 5 fires per user)
 
 | Event | When | Key properties |
 |---|---|---|
 | `Payout750_Viewed` | page load | — |
 | `Payout750_Progress` | <=2x | `milestone`: `content_opened`, `reached_choice` |
-| `Payout750_Confirmed` | confirm tap (conversion) | `choice`, `lang`, `lang_toggles`, `selection_changes`, `seconds` |
+| `Payout750_Confirmed` | opt-in confirmed (conversion) | `choice='new'`, `lang`, `lang_toggles`, `selection_changes`, `seconds` |
+| `Payout750_Declined` | "अभी नहीं" confirmed | `choice='later'`, same properties |
 | `Payout750_Closed` | terminal | `exit`, `choice`, `last_selected`, `api_status`, `api_error`, `api_http` |
 
+`Confirmed` and `Declined` are mutually exclusive - exactly one can fire.
 Language toggles and radio selections are counted into properties rather than fired as events.
