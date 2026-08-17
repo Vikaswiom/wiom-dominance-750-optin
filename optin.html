@@ -712,8 +712,30 @@
   function qp(name){
     try{ return new URLSearchParams(location.search).get(name) || ''; }catch(e){ return ''; }
   }
-  function cspId(){ return window.CSP_ID || qp('cspId') || qp('csp_id') || ''; }
-  function cspJwt(){ return window.CSP_JWT || qp('token') || qp('jwt') || ''; }
+  function ssGet(k){ try{ return sessionStorage.getItem(k) || ''; }catch(e){ return ''; } }
+  function ssSet(k,v){ try{ sessionStorage.setItem(k,v); }catch(e){} }
+
+  /* Captured ONCE on the first screen and reused for the whole flow. If the app rewrites
+     the URL, reloads, or drops the query string between the cover and the confirm tap,
+     the id is still here — that was the "CSP ID नहीं मिला" failure mode.
+     sessionStorage (not localStorage) on purpose: a stale id from a previous session must
+     never enrol the wrong CSP on a shared device. */
+  var ID_SRC = 'none';
+  var CSP_ID_AT_LOAD = (function(){
+    var v = window.CSP_ID || '';                        if (v) ID_SRC = 'window';
+    if (!v){ v = qp('cspId') || qp('csp_id') || '';     if (v) ID_SRC = 'url'; }
+    if (!v){ v = ssGet('dominance_csp_id');             if (v) ID_SRC = 'session'; }
+    if (v) ssSet('dominance_csp_id', v);
+    return v;
+  })();
+  var CSP_JWT_AT_LOAD = (function(){
+    var v = window.CSP_JWT || qp('token') || qp('jwt') || ssGet('dominance_csp_jwt') || '';
+    if (v) ssSet('dominance_csp_jwt', v);
+    return v;
+  })();
+
+  function cspId(){ return CSP_ID_AT_LOAD || window.CSP_ID || qp('cspId') || qp('csp_id') || ''; }
+  function cspJwt(){ return CSP_JWT_AT_LOAD || window.CSP_JWT || qp('token') || qp('jwt') || ''; }
 
   function apiState(st, err){ apiStatus = st; if (err) apiErr = err; }
 
