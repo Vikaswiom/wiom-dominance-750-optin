@@ -104,6 +104,19 @@ Contract notes that matter: re-posting `OPTED_IN` is idempotent (`already_enroll
 3. If neither is solvable, fall back to: creative records the choice in CleverTap only, and the app
    makes the authenticated POST itself after reading the event / profile flag.
 
+## 6b. Target cohort
+
+**332 CSP IDs** (supplied 17 Aug 2026, deduped, no malformed entries). The list is NOT in this repo —
+this repo is public because GitHub Pages requires it. It lives in the private archive:
+
+```
+Vikaswiom/wiom-projects-archive -> dominance-750-optin/
+  csp_ids.txt     one id per line, sorted
+  csp_links.csv   csp_id,link  (per-CSP opt-in URL)
+```
+
+For the CleverTap segment, map CSP ID -> CT identity via `PROD_DB.CLEVERTAP_CSP_API.PROFILE_DATA`.
+
 ## 7. Campaign settings
 
 Layout **Cover** (not interstitial — a full-bleed creative gets letterboxed otherwise).
