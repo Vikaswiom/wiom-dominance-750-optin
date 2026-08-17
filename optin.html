@@ -319,7 +319,7 @@
   }
 </style>
 
-<span class="buildstamp">build 6</span>
+<span class="buildstamp">build 7</span>
 <div class="phone">
   <div class="cover" id="cover">
     <button class="langtoggle clang" id="langToggle2" aria-label="Switch language">English</button>
@@ -739,33 +739,57 @@
 
   function apiState(st, err){ apiStatus = st; if (err) apiErr = err; }
 
+  /* Transport with an XHR fallback — older Android WebViews have no fetch(), and calling a
+     missing fetch() threw synchronously, which used to leave the UI locked. cb(status), 0 = failed. */
+  function sendConsent(id, tok, consent, cb){
+    var url = API.base + API.path;
+    var body = JSON.stringify({ csp_id: id, consent_choice: consent });
+    var fired = false;
+    function once(s){ if (fired) return; fired = true; cb(s); }
+    if (typeof fetch === 'function'){
+      try{
+        var h = { 'Content-Type': 'application/json' };
+        if (tok) h['Authorization'] = 'Bearer ' + tok;
+        fetch(url, { method:'POST', headers:h, body:body, keepalive:true })
+          .then(function(r){ once(r.status); })
+          .catch(function(){ once(0); });
+        return;
+      }catch(e){ /* fall through to XHR */ }
+    }
+    try{
+      var x = new XMLHttpRequest();
+      x.open('POST', url, true);
+      x.setRequestHeader('Content-Type', 'application/json');
+      if (tok) x.setRequestHeader('Authorization', 'Bearer ' + tok);
+      x.onreadystatechange = function(){ if (x.readyState === 4) once(x.status || 0); };
+      x.onerror = function(){ once(0); };
+      x.send(body);
+    }catch(e){ once(0); }
+  }
+
   /* done(ok) is called exactly once, after all retries are exhausted.
      ok === true only on an HTTP 200 — that is the ONLY path to the success screen. */
   function postConsent(consent, attempt, done){
-    apiChoice = consent;
-    var id = cspId();
-    if (!id){ apiState('skipped', 'no_csp_id'); done(false); return; }
-    var headers = { 'Content-Type': 'application/json' };
-    var tok = cspJwt();
-    if (tok) headers['Authorization'] = 'Bearer ' + tok;
-    apiState('saving');
-    fetch(API.base + API.path, {
-      method: 'POST',
-      headers: headers,
-      body: JSON.stringify({ csp_id: id, consent_choice: consent }),
-      keepalive: true
-    }).then(function(r){
-      apiHttp = r.status;
-      if (r.ok){ apiState('ok'); done(true); return; }
-      /* retry only server-side / gateway failures, never a 4xx */
-      if (r.status >= 500 && attempt < 3){ setTimeout(function(){ postConsent(consent, attempt + 1, done); }, 800 * attempt); return; }
-      apiState('error', 'http_' + r.status);
+    try{
+      apiChoice = consent;
+      var id = cspId();
+      if (!id){ apiState('skipped', 'no_csp_id'); done(false); return; }
+      apiState('saving');
+      sendConsent(id, cspJwt(), consent, function(status){
+        apiHttp = status;
+        if (status >= 200 && status < 300){ apiState('ok'); done(true); return; }
+        /* retry transport failures and 5xx, never a 4xx */
+        if ((status === 0 || status >= 500) && attempt < 3){
+          setTimeout(function(){ postConsent(consent, attempt + 1, done); }, 800 * attempt);
+          return;
+        }
+        apiState('error', status ? ('http_' + status) : 'network');
+        done(false);
+      });
+    }catch(e){
+      apiState('error', 'exception');
       done(false);
-    }).catch(function(){
-      if (attempt < 3){ setTimeout(function(){ postConsent(consent, attempt + 1, done); }, 800 * attempt); return; }
-      apiState('error', 'network');
-      done(false);
-    });
+    }
   }
 
   function dismissInApp(){
@@ -919,17 +943,29 @@
     btn.disabled = true;
     document.getElementById('errRetry').disabled = true;
     render();
-    postConsent('OPTED_IN', 1, function(ok){
-      apiBusy = false;
+
+    var settled = false;
+    function finish(ok){
+      if (settled) return;
+      settled = true;
+      clearTimeout(watchdog);
+      apiBusy = false;                       /* ALWAYS released — the UI can never lock up */
       btn.disabled = false;
       document.getElementById('errRetry').disabled = false;
       render();
       if (ok) showDone(); else showErr();
-    });
+    }
+    /* if the request never comes back at all, fail open after 20s instead of freezing */
+    var watchdog = setTimeout(function(){ apiState('error', 'timeout'); finish(false); }, 20000);
+
+    try{ postConsent('OPTED_IN', 1, finish); }
+    catch(e){ apiState('error', 'exception'); finish(false); }
   }
 
   btn.addEventListener('click', () => {
-    if (!selected || apiBusy) return;
+    /* "अभी नहीं" makes no API call, so a save in flight must never block it */
+    if (!selected) return;
+    if (apiBusy && selected === 'new') return;
     confirmed = selected;
     if (selected === 'new') confirmedDate = new Date();
     /* the inline confirm blocks stay hidden — the full-screen page IS the confirmation.
