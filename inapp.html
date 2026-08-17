@@ -320,7 +320,7 @@
   }
 </style>
 
-<span class="buildstamp">build 7</span>
+<span class="buildstamp">build 8</span>
 <div class="phone">
   <div class="cover" id="cover">
     <button class="langtoggle clang" id="langToggle2" aria-label="Switch language">English</button>
@@ -534,495 +534,601 @@
 </div>
 
 <script>
-  const STR = {
-    hi: {
-      appTitle: 'पेआउट का तरीका',
-      toggle: 'English',
-      eyebrow: 'नए कनेक्शन पर',
-      heroSub: 'एक साथ, शुरू में ही',
-      heroLine: 'यह पहले 3 महीने का पेआउट है — हर नए कनेक्शन पर।',
-      heroDuty: '<b>ज़िम्मेदारी:</b> शुरू में एक बार 3 महीने का ISP रिचार्ज + पहले 3 महीने की सर्विस।',
-      tlHead: 'पूरा सफ़र, एक नज़र में',
-      t1When: 'दिन 0 — नए कनेक्शन के साथ', t1Main: 'एक साथ',
-      t1Note: '3 महीने का ISP रिचार्ज करें, प्रूफ़ ऐप पर अपलोड करें — ₹750 मिल जाएगा।',
-      t2When: 'महीना 1 – 3', t2Main: 'कोई अलग पेआउट नहीं',
-      t2Note: 'पेआउट और रिचार्ज दोनों शुरू में हो चुके। इन महीनों में सर्विस आपकी ज़िम्मेदारी है।',
-      t3When: 'महीना 4 से आगे', t3Main: 'हर रिन्यूअल पर',
-      t3Note: 'जब भी 1 महीने का रिन्यूअल टिकट बनेगा, उस पर ₹300',
-      flatHead: 'ग्राहक जल्दी बंद कर दे तो?',
-      flatAria: 'ग्राहक 1 दिन चले, 1 महीना चले, या पूरे 3 महीने — तीनों में पेआउट ₹750 ही है',
-      bar1: 'ग्राहक <b>1 दिन</b> चला', bar2: 'ग्राहक <b>1 महीना</b> चला', bar3: 'ग्राहक <b>पूरे 3 महीने</b> चला',
-      flatVerdict: '₹750 नहीं बदलेगा — न कम, न ज़्यादा।',
-      flatDuty: 'तीनों में 3 महीने का रिचार्ज और सर्विस ज़िम्मेदारी वही रहेगी।',
-      checkHead: 'दो ज़रूरी बातें',
-      k1q: 'ग्राहक जल्दी बंद करे तो?', k1a: '<b>₹750 नहीं बदलेगा</b> — ज़िम्मेदारी भी वही रहेगी।',
-      k2q: '3 महीने के बाद?', k2a: 'हर <b>1 महीने के रिन्यूअल टिकट</b> पर <b>₹300</b>',
-      chHead: 'पेआउट का तरीका चुनें',
-      optNewH: 'नया तरीका: ₹750 शुरू में ही',
-      optNewP: 'शुरू में 3 महीने का रिचार्ज + प्रूफ़ अपलोड → ₹750 एक साथ। 3 महीने बाद ₹300 हर रिन्यूअल टिकट पर।',
-      optLaterH: 'अभी नहीं',
-      optLaterP: 'अभी वाला तरीका चलता रहेगा।',
-      ctaNone: 'पहले ऊपर से एक चुनें',
-      ctaNew: 'नया तरीका पक्का करें',
-      ctaLater: 'अभी नहीं — पक्का करें',
-      cnH: 'नया तरीका चुन लिया गया',
-      cnP: 'तरीका: <b>₹750 शुरू में + ₹300 हर रिन्यूअल टिकट पर</b>',
-      cnNote: 'इस तारीख़ के बाद लगने वाले नए कनेक्शनों पर लागू होगा। पहले के कनेक्शनों पर पुराना तरीका रहेगा।',
-      clH: 'ठीक है — अभी कोई बदलाव नहीं',
-      clP: 'अभी वाला पेआउट तरीका चलता रहेगा।',
-      effPrefix: 'लागू तारीख़: ',
-      months: ['जनवरी','फ़रवरी','मार्च','अप्रैल','मई','जून','जुलाई','अगस्त','सितंबर','अक्टूबर','नवंबर','दिसंबर'],
-      barPending: 'पूरा देखें, फिर अपना तरीका चुनें',
-      barDoneNew: 'फ़ैसला हो गया — नया तरीका चुना',
-      barDoneLater: 'फ़ैसला हो गया — अभी नहीं',
-      covEyebrow: 'नए कनेक्शन का पेआउट',
-      covTitle: 'पेआउट का नया तरीका आया है',
-      covLine: 'इसे देखकर आपको चुनना है,<br>नया तरीका लें या अभी वाला रखें।',
-      covCta: 'देखें और चुनें',
-      docTitle: 'नया पेआउट तरीका — ₹750 शुरू में',
-      endCta: 'सारे काम देखें',
-      ctaSaving: 'सेव हो रहा है…',
-      errH: 'कुछ गड़बड़ हो गई',
-      errP: 'आपका फ़ैसला सेव नहीं हो पाया। इंटरनेट जाँचकर फिर से कोशिश करें।',
-      errNote: 'आपका चुनाव अभी दर्ज नहीं हुआ है।',
-      errRetry: 'फिर से कोशिश करें',
-      errLater: 'बाद में करेंगे',
-      errNoId: 'लिंक में CSP ID नहीं मिला — ऐप से दोबारा खोलें।'
-    },
-    en: {
-      appTitle: 'Payout Structure',
-      toggle: 'हिंदी',
-      eyebrow: 'On every new connection',
-      heroSub: 'in one go, right at the start',
-      heroLine: 'This is the payout for the first 3 months — on every new connection.',
-      heroDuty: '<b>Your responsibility:</b> one 3-month ISP recharge at the start + service for the first 3 months.',
-      tlHead: 'The full journey, at a glance',
-      t1When: 'Day 0 — with the new connection', t1Main: 'in one go',
-      t1Note: 'Do the 3-month ISP recharge, upload proof on the app — ₹750 is paid.',
-      t2When: 'Month 1 – 3', t2Main: 'No separate payout',
-      t2Note: 'Payout and recharge are both done at the start. Service is your responsibility through these months.',
-      t3When: 'Month 4 onwards', t3Main: 'per renewal',
-      t3Note: 'Whenever a 1-month renewal ticket is generated, you get ₹300 for it.',
-      flatHead: 'What if the customer stops early?',
-      flatAria: 'Customer stays 1 day, 1 month, or full 3 months — payout is ₹750 in all three cases',
-      bar1: 'Customer stayed <b>1 day</b>', bar2: 'Customer stayed <b>1 month</b>', bar3: 'Customer stayed the <b>full 3 months</b>',
-      flatVerdict: '₹750 does not change — no less, no more.',
-      flatDuty: 'In all three cases, the 3-month recharge and service responsibility stay the same.',
-      checkHead: 'Two things to remember',
-      k1q: 'If the customer stops early?', k1a: '<b>₹750 does not change</b> — and the responsibility stays the same.',
-      k2q: 'After 3 months?', k2a: '<b>₹300</b> for every <b>1-month renewal ticket</b>.',
-      chHead: 'Choose your payout structure',
-      optNewH: 'New structure: ₹750 at the start',
-      optNewP: '3-month recharge + proof upload at the start → ₹750 in one go. After 3 months, ₹300 per renewal ticket.',
-      optLaterH: 'Not now',
-      optLaterP: 'Your current structure continues as is.',
-      ctaNone: 'Select one option above',
-      ctaNew: 'Confirm new structure',
-      ctaLater: 'Not now — confirm',
-      cnH: 'New structure selected',
-      cnP: 'Structure: <b>₹750 at the start + ₹300 per renewal ticket</b>',
-      cnNote: 'Applies to new connections installed after this date. Earlier connections stay on the old structure.',
-      clH: 'Okay — no change for now',
-      clP: 'Your current payout structure continues.',
-      effPrefix: 'Effective date: ',
-      months: ['January','February','March','April','May','June','July','August','September','October','November','December'],
-      barPending: 'Review the full structure, then choose yours',
-      barDoneNew: 'Decision made — new structure chosen',
-      barDoneLater: 'Decision made — not now',
-      covEyebrow: 'New connection payout',
-      covTitle: 'A new payout structure is here',
-      covLine: 'Review it and choose,<br>take the new structure or keep your current one.',
-      covCta: 'Review & choose',
-      docTitle: 'New Payout Structure — ₹750 at the Start',
-      endCta: 'View all tasks',
-      ctaSaving: 'Saving…',
-      errH: 'Something went wrong',
-      errP: 'We could not save your choice. Check your internet and try again.',
-      errNote: 'Your choice has not been recorded yet.',
-      errRetry: 'Try again',
-      errLater: 'Later',
-      errNoId: 'CSP ID missing from the link — reopen it from the app.'
+var STR = {
+  hi: {
+    appTitle: 'पेआउट का तरीका',
+    toggle: 'English',
+    eyebrow: 'नए कनेक्शन पर',
+    heroSub: 'एक साथ, शुरू में ही',
+    heroLine: 'यह पहले 3 महीने का पेआउट है — हर नए कनेक्शन पर।',
+    heroDuty: '<b>ज़िम्मेदारी:</b> शुरू में एक बार 3 महीने का ISP रिचार्ज + पहले 3 महीने की सर्विस।',
+    tlHead: 'पूरा सफ़र, एक नज़र में',
+    t1When: 'दिन 0 — नए कनेक्शन के साथ',
+    t1Main: 'एक साथ',
+    t1Note: '3 महीने का ISP रिचार्ज करें, प्रूफ़ ऐप पर अपलोड करें — ₹750 मिल जाएगा।',
+    t2When: 'महीना 1 – 3',
+    t2Main: 'कोई अलग पेआउट नहीं',
+    t2Note: 'पेआउट और रिचार्ज दोनों शुरू में हो चुके। इन महीनों में सर्विस आपकी ज़िम्मेदारी है।',
+    t3When: 'महीना 4 से आगे',
+    t3Main: 'हर रिन्यूअल पर',
+    t3Note: 'जब भी 1 महीने का रिन्यूअल टिकट बनेगा, उस पर ₹300',
+    flatHead: 'ग्राहक जल्दी बंद कर दे तो?',
+    flatAria: 'ग्राहक 1 दिन चले, 1 महीना चले, या पूरे 3 महीने — तीनों में पेआउट ₹750 ही है',
+    bar1: 'ग्राहक <b>1 दिन</b> चला',
+    bar2: 'ग्राहक <b>1 महीना</b> चला',
+    bar3: 'ग्राहक <b>पूरे 3 महीने</b> चला',
+    flatVerdict: '₹750 नहीं बदलेगा — न कम, न ज़्यादा।',
+    flatDuty: 'तीनों में 3 महीने का रिचार्ज और सर्विस ज़िम्मेदारी वही रहेगी।',
+    checkHead: 'दो ज़रूरी बातें',
+    k1q: 'ग्राहक जल्दी बंद करे तो?',
+    k1a: '<b>₹750 नहीं बदलेगा</b> — ज़िम्मेदारी भी वही रहेगी।',
+    k2q: '3 महीने के बाद?',
+    k2a: 'हर <b>1 महीने के रिन्यूअल टिकट</b> पर <b>₹300</b>',
+    chHead: 'पेआउट का तरीका चुनें',
+    optNewH: 'नया तरीका: ₹750 शुरू में ही',
+    optNewP: 'शुरू में 3 महीने का रिचार्ज + प्रूफ़ अपलोड → ₹750 एक साथ। 3 महीने बाद ₹300 हर रिन्यूअल टिकट पर।',
+    optLaterH: 'अभी नहीं',
+    optLaterP: 'अभी वाला तरीका चलता रहेगा।',
+    ctaNone: 'पहले ऊपर से एक चुनें',
+    ctaNew: 'नया तरीका पक्का करें',
+    ctaLater: 'अभी नहीं — पक्का करें',
+    cnH: 'नया तरीका चुन लिया गया',
+    cnP: 'तरीका: <b>₹750 शुरू में + ₹300 हर रिन्यूअल टिकट पर</b>',
+    cnNote: 'इस तारीख़ के बाद लगने वाले नए कनेक्शनों पर लागू होगा। पहले के कनेक्शनों पर पुराना तरीका रहेगा।',
+    clH: 'ठीक है — अभी कोई बदलाव नहीं',
+    clP: 'अभी वाला पेआउट तरीका चलता रहेगा।',
+    effPrefix: 'लागू तारीख़: ',
+    months: ['जनवरी', 'फ़रवरी', 'मार्च', 'अप्रैल', 'मई', 'जून', 'जुलाई', 'अगस्त', 'सितंबर', 'अक्टूबर', 'नवंबर', 'दिसंबर'],
+    barPending: 'पूरा देखें, फिर अपना तरीका चुनें',
+    barDoneNew: 'फ़ैसला हो गया — नया तरीका चुना',
+    barDoneLater: 'फ़ैसला हो गया — अभी नहीं',
+    covEyebrow: 'नए कनेक्शन का पेआउट',
+    covTitle: 'पेआउट का नया तरीका आया है',
+    covLine: 'इसे देखकर आपको चुनना है,<br>नया तरीका लें या अभी वाला रखें।',
+    covCta: 'देखें और चुनें',
+    docTitle: 'नया पेआउट तरीका — ₹750 शुरू में',
+    endCta: 'सारे काम देखें',
+    ctaSaving: 'सेव हो रहा है…',
+    errH: 'कुछ गड़बड़ हो गई',
+    errP: 'आपका फ़ैसला सेव नहीं हो पाया। इंटरनेट जाँचकर फिर से कोशिश करें।',
+    errNote: 'आपका चुनाव अभी दर्ज नहीं हुआ है।',
+    errRetry: 'फिर से कोशिश करें',
+    errLater: 'बाद में करेंगे',
+    errNoId: 'लिंक में CSP ID नहीं मिला — ऐप से दोबारा खोलें।'
+  },
+  en: {
+    appTitle: 'Payout Structure',
+    toggle: 'हिंदी',
+    eyebrow: 'On every new connection',
+    heroSub: 'in one go, right at the start',
+    heroLine: 'This is the payout for the first 3 months — on every new connection.',
+    heroDuty: '<b>Your responsibility:</b> one 3-month ISP recharge at the start + service for the first 3 months.',
+    tlHead: 'The full journey, at a glance',
+    t1When: 'Day 0 — with the new connection',
+    t1Main: 'in one go',
+    t1Note: 'Do the 3-month ISP recharge, upload proof on the app — ₹750 is paid.',
+    t2When: 'Month 1 – 3',
+    t2Main: 'No separate payout',
+    t2Note: 'Payout and recharge are both done at the start. Service is your responsibility through these months.',
+    t3When: 'Month 4 onwards',
+    t3Main: 'per renewal',
+    t3Note: 'Whenever a 1-month renewal ticket is generated, you get ₹300 for it.',
+    flatHead: 'What if the customer stops early?',
+    flatAria: 'Customer stays 1 day, 1 month, or full 3 months — payout is ₹750 in all three cases',
+    bar1: 'Customer stayed <b>1 day</b>',
+    bar2: 'Customer stayed <b>1 month</b>',
+    bar3: 'Customer stayed the <b>full 3 months</b>',
+    flatVerdict: '₹750 does not change — no less, no more.',
+    flatDuty: 'In all three cases, the 3-month recharge and service responsibility stay the same.',
+    checkHead: 'Two things to remember',
+    k1q: 'If the customer stops early?',
+    k1a: '<b>₹750 does not change</b> — and the responsibility stays the same.',
+    k2q: 'After 3 months?',
+    k2a: '<b>₹300</b> for every <b>1-month renewal ticket</b>.',
+    chHead: 'Choose your payout structure',
+    optNewH: 'New structure: ₹750 at the start',
+    optNewP: '3-month recharge + proof upload at the start → ₹750 in one go. After 3 months, ₹300 per renewal ticket.',
+    optLaterH: 'Not now',
+    optLaterP: 'Your current structure continues as is.',
+    ctaNone: 'Select one option above',
+    ctaNew: 'Confirm new structure',
+    ctaLater: 'Not now — confirm',
+    cnH: 'New structure selected',
+    cnP: 'Structure: <b>₹750 at the start + ₹300 per renewal ticket</b>',
+    cnNote: 'Applies to new connections installed after this date. Earlier connections stay on the old structure.',
+    clH: 'Okay — no change for now',
+    clP: 'Your current payout structure continues.',
+    effPrefix: 'Effective date: ',
+    months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+    barPending: 'Review the full structure, then choose yours',
+    barDoneNew: 'Decision made — new structure chosen',
+    barDoneLater: 'Decision made — not now',
+    covEyebrow: 'New connection payout',
+    covTitle: 'A new payout structure is here',
+    covLine: 'Review it and choose,<br>take the new structure or keep your current one.',
+    covCta: 'Review & choose',
+    docTitle: 'New Payout Structure — ₹750 at the Start',
+    endCta: 'View all tasks',
+    ctaSaving: 'Saving…',
+    errH: 'Something went wrong',
+    errP: 'We could not save your choice. Check your internet and try again.',
+    errNote: 'Your choice has not been recorded yet.',
+    errRetry: 'Try again',
+    errLater: 'Later',
+    errNoId: 'CSP ID missing from the link — reopen it from the app.'
+  }
+};
+
+/* ═══════════════ CleverTap analytics — 5 events, max 5 fires per user ═══════════════
+   Payout750_Viewed     1x    in-app shown (cover impression)
+   Payout750_Progress   <=2x  {milestone: 'content_opened' | 'reached_choice'}
+   Payout750_Confirmed  1x    OPT-IN confirmed  {choice:'new', ...}   CONVERSION
+   Payout750_Declined   1x    "अभी नहीं" confirmed  {choice:'later', ...}
+   Payout750_Closed     1x    {exit, choice, last_selected, reached_choice, lang,
+                               lang_toggles, seconds, api_status, api_error, api_http}
+    Confirmed and Declined are mutually exclusive — exactly one of them can ever fire.
+   Deliberately NOT separate events: language toggles (counted -> lang_toggles),
+   radio selections (counted -> selection_changes + last_selected), scroll depth
+   beyond the choice section. Everything else rides as properties on the events above.
+   ═══════════════════════════════════════════════════════════════════════════════════ */
+
+var EV = 'Payout750_';
+var t0 = Date.now();
+var sent = {};
+var langToggles = 0,
+  selectionChanges = 0,
+  lastSelected = null,
+  reachedChoice = false,
+  ended = false;
+function ctPush(ev, props) {
+  try {
+    if (window.CleverTap && typeof window.CleverTap.pushEvent === 'function') {
+      if (props) window.CleverTap.pushEvent(ev, JSON.stringify(props));else window.CleverTap.pushEvent(ev);
+      return true;
     }
-  };
-
-  /* ═══════════════ CleverTap analytics — 5 events, max 5 fires per user ═══════════════
-     Payout750_Viewed     1x    in-app shown (cover impression)
-     Payout750_Progress   <=2x  {milestone: 'content_opened' | 'reached_choice'}
-     Payout750_Confirmed  1x    OPT-IN confirmed  {choice:'new', ...}   CONVERSION
-     Payout750_Declined   1x    "अभी नहीं" confirmed  {choice:'later', ...}
-     Payout750_Closed     1x    {exit, choice, last_selected, reached_choice, lang,
-                                 lang_toggles, seconds, api_status, api_error, api_http}
-
-     Confirmed and Declined are mutually exclusive — exactly one of them can ever fire.
-     Deliberately NOT separate events: language toggles (counted -> lang_toggles),
-     radio selections (counted -> selection_changes + last_selected), scroll depth
-     beyond the choice section. Everything else rides as properties on the events above.
-     ═══════════════════════════════════════════════════════════════════════════════════ */
-
-  var EV = 'Payout750_';
-  var t0 = Date.now();
-  var sent = {};
-  var langToggles = 0, selectionChanges = 0, lastSelected = null, reachedChoice = false, ended = false;
-
-  function ctPush(ev, props){
-    try{
-      if (window.CleverTap && typeof window.CleverTap.pushEvent === 'function'){
-        if (props) window.CleverTap.pushEvent(ev, JSON.stringify(props));
-        else window.CleverTap.pushEvent(ev);
-        return true;
-      }
-    }catch(e){}
-    try{
-      var wk = window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.clevertap;
-      if (wk){ wk.postMessage({ action:'recordEventWithProps', event:ev, properties:props||{} }); return true; }
-    }catch(e){}
-    return false;
-  }
-
-  /* dedupe on name+payload, retry 6x with 250ms*n back-off if the bridge is not attached yet */
-  function track(name, props){
-    var ev = EV + name;
-    var key = ev + '|' + JSON.stringify(props || {});
-    if (sent[key]) return;
-    sent[key] = 1;
-    var n = 0;
-    (function attempt(){
-      n++;
-      if (ctPush(ev, props)) return;
-      if (n < 6) setTimeout(attempt, 250 * n);
-    })();
-  }
-
-  function secs(){ return Math.round((Date.now() - t0) / 1000); }
-
-  /* ═══════════════ Dominance consent API — POST /dominance/consent ═══════════════
-     Fires ONLY for the opt-in: choice 'new' -> consent_choice OPTED_IN.
-     "अभी नहीं" (choice 'later') is a UI-only decline — NO API call is made for it.
-     INLINE IN-APP BUILD: there is no page URL here, so csp_id / JWT cannot come from query
-     params. The app must expose them on the WebView as window.CSP_ID / window.CSP_JWT, or the
-     dev team can hard-set CSP_ID_FIXED below per segment. Without an id the POST is skipped,
-     the CSP sees the error screen, and Payout750_Closed reports api_status=skipped.
-     ═══════════════════════════════════════════════════════════════════════════════ */
-
-  var API = {
-    base: 'https://csp-gateway-service-qa.i2e1agents.in',   /* QA — TESTING. Switch to PROD before go-live: https://csp-api.i2e1.in */
-    path: '/dominance/consent'
-  };
-
-  /* dev team: fill these if the app cannot inject window.CSP_ID / window.CSP_JWT */
-  var CSP_ID_FIXED = '';
-  var CSP_JWT_FIXED = '';
-
-  var apiStatus = 'idle', apiErr = '', apiHttp = 0, apiChoice = null, apiBusy = false;
-
-  function qp(name){
-    try{ return new URLSearchParams(location.search).get(name) || ''; }catch(e){ return ''; }
-  }
-  function ssGet(k){ try{ return sessionStorage.getItem(k) || ''; }catch(e){ return ''; } }
-  function ssSet(k,v){ try{ sessionStorage.setItem(k,v); }catch(e){} }
-
-  /* Captured ONCE on the first screen and reused for the whole flow. If the app rewrites
-     the URL, reloads, or drops the query string between the cover and the confirm tap,
-     the id is still here — that was the "CSP ID नहीं मिला" failure mode.
-     sessionStorage (not localStorage) on purpose: a stale id from a previous session must
-     never enrol the wrong CSP on a shared device. */
-  var ID_SRC = 'none';
-  var CSP_ID_AT_LOAD = (function(){
-    var v = window.CSP_ID || CSP_ID_FIXED || '';        if (v) ID_SRC = 'window';
-    if (!v){ v = qp('cspId') || qp('csp_id') || '';     if (v) ID_SRC = 'url'; }
-    if (!v){ v = ssGet('dominance_csp_id');             if (v) ID_SRC = 'session'; }
-    if (v) ssSet('dominance_csp_id', v);
-    return v;
-  })();
-  var CSP_JWT_AT_LOAD = (function(){
-    var v = window.CSP_JWT || CSP_JWT_FIXED || qp('token') || qp('jwt') || ssGet('dominance_csp_jwt') || '';
-    if (v) ssSet('dominance_csp_jwt', v);
-    return v;
-  })();
-
-  function cspId(){ return CSP_ID_AT_LOAD || window.CSP_ID || qp('cspId') || qp('csp_id') || ''; }
-  function cspJwt(){ return CSP_JWT_AT_LOAD || window.CSP_JWT || qp('token') || qp('jwt') || ''; }
-
-  function apiState(st, err){ apiStatus = st; if (err) apiErr = err; }
-
-  /* Transport with an XHR fallback — older Android WebViews have no fetch(), and calling a
-     missing fetch() threw synchronously, which used to leave the UI locked. cb(status), 0 = failed. */
-  function sendConsent(id, tok, consent, cb){
-    var url = API.base + API.path;
-    var body = JSON.stringify({ csp_id: id, consent_choice: consent });
-    var fired = false;
-    function once(s){ if (fired) return; fired = true; cb(s); }
-    if (typeof fetch === 'function'){
-      try{
-        var h = { 'Content-Type': 'application/json' };
-        if (tok) h['Authorization'] = 'Bearer ' + tok;
-        fetch(url, { method:'POST', headers:h, body:body, keepalive:true })
-          .then(function(r){ once(r.status); })
-          .catch(function(){ once(0); });
-        return;
-      }catch(e){ /* fall through to XHR */ }
-    }
-    try{
-      var x = new XMLHttpRequest();
-      x.open('POST', url, true);
-      x.setRequestHeader('Content-Type', 'application/json');
-      if (tok) x.setRequestHeader('Authorization', 'Bearer ' + tok);
-      x.onreadystatechange = function(){ if (x.readyState === 4) once(x.status || 0); };
-      x.onerror = function(){ once(0); };
-      x.send(body);
-    }catch(e){ once(0); }
-  }
-
-  /* done(ok) is called exactly once, after all retries are exhausted.
-     ok === true only on an HTTP 200 — that is the ONLY path to the success screen. */
-  function postConsent(consent, attempt, done){
-    try{
-      apiChoice = consent;
-      var id = cspId();
-      if (!id){ apiState('skipped', 'no_csp_id'); done(false); return; }
-      apiState('saving');
-      sendConsent(id, cspJwt(), consent, function(status){
-        apiHttp = status;
-        if (status >= 200 && status < 300){ apiState('ok'); done(true); return; }
-        /* retry transport failures and 5xx, never a 4xx */
-        if ((status === 0 || status >= 500) && attempt < 3){
-          setTimeout(function(){ postConsent(consent, attempt + 1, done); }, 800 * attempt);
-          return;
-        }
-        apiState('error', status ? ('http_' + status) : 'network');
-        done(false);
+  } catch (e) {}
+  try {
+    var wk = window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.clevertap;
+    if (wk) {
+      wk.postMessage({
+        action: 'recordEventWithProps',
+        event: ev,
+        properties: props || {}
       });
-    }catch(e){
-      apiState('error', 'exception');
+      return true;
+    }
+  } catch (e) {}
+  return false;
+}
+
+/* dedupe on name+payload, retry 6x with 250ms*n back-off if the bridge is not attached yet */
+function track(name, props) {
+  var ev = EV + name;
+  var key = ev + '|' + JSON.stringify(props || {});
+  if (sent[key]) return;
+  sent[key] = 1;
+  var n = 0;
+  (function attempt() {
+    n++;
+    if (ctPush(ev, props)) return;
+    if (n < 6) setTimeout(attempt, 250 * n);
+  })();
+}
+function secs() {
+  return Math.round((Date.now() - t0) / 1000);
+}
+
+/* ═══════════════ Dominance consent API — POST /dominance/consent ═══════════════
+   Fires ONLY for the opt-in: choice 'new' -> consent_choice OPTED_IN.
+   "अभी नहीं" (choice 'later') is a UI-only decline — NO API call is made for it.
+   INLINE IN-APP BUILD: the app must expose window.CSP_ID / window.CSP_JWT, or the dev team
+   can hard-set CSP_ID_FIXED below per segment. Without an id the POST is skipped, the CSP sees
+   the error screen, and Payout750_Closed reports api_status=skipped.
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+var API = {
+  base: 'https://csp-gateway-service-qa.i2e1agents.in',
+  /* QA — TESTING. Switch to PROD before go-live: https://csp-api.i2e1.in */
+  path: '/dominance/consent'
+};
+
+/* dev team: fill these if the app cannot inject window.CSP_ID / window.CSP_JWT */
+var CSP_ID_FIXED = '';
+var CSP_JWT_FIXED = '';
+var apiStatus = 'idle',
+  apiErr = '',
+  apiHttp = 0,
+  apiChoice = null,
+  apiBusy = false;
+function qp(name) {
+  try {
+    return new URLSearchParams(location.search).get(name) || '';
+  } catch (e) {
+    return '';
+  }
+}
+function ssGet(k) {
+  try {
+    return sessionStorage.getItem(k) || '';
+  } catch (e) {
+    return '';
+  }
+}
+function ssSet(k, v) {
+  try {
+    sessionStorage.setItem(k, v);
+  } catch (e) {}
+}
+
+/* Captured ONCE on the first screen and reused for the whole flow. If the app rewrites
+   the URL, reloads, or drops the query string between the cover and the confirm tap,
+   the id is still here — that was the "CSP ID नहीं मिला" failure mode.
+   sessionStorage (not localStorage) on purpose: a stale id from a previous session must
+   never enrol the wrong CSP on a shared device. */
+var ID_SRC = 'none';
+var CSP_ID_AT_LOAD = function () {
+  var v = window.CSP_ID || CSP_ID_FIXED || '';
+  if (v) ID_SRC = 'window';
+  if (!v) {
+    v = qp('cspId') || qp('csp_id') || '';
+    if (v) ID_SRC = 'url';
+  }
+  if (!v) {
+    v = ssGet('dominance_csp_id');
+    if (v) ID_SRC = 'session';
+  }
+  if (v) ssSet('dominance_csp_id', v);
+  return v;
+}();
+var CSP_JWT_AT_LOAD = function () {
+  var v = window.CSP_JWT || CSP_JWT_FIXED || qp('token') || qp('jwt') || ssGet('dominance_csp_jwt') || '';
+  if (v) ssSet('dominance_csp_jwt', v);
+  return v;
+}();
+function cspId() {
+  return CSP_ID_AT_LOAD || window.CSP_ID || qp('cspId') || qp('csp_id') || '';
+}
+function cspJwt() {
+  return CSP_JWT_AT_LOAD || window.CSP_JWT || qp('token') || qp('jwt') || '';
+}
+function apiState(st, err) {
+  apiStatus = st;
+  if (err) apiErr = err;
+}
+
+/* Transport with an XHR fallback — older Android WebViews have no fetch(), and calling a
+   missing fetch() threw synchronously, which used to leave the UI locked. cb(status), 0 = failed. */
+function sendConsent(id, tok, consent, cb) {
+  var url = API.base + API.path;
+  var body = JSON.stringify({
+    csp_id: id,
+    consent_choice: consent
+  });
+  var fired = false;
+  function once(s) {
+    if (fired) return;
+    fired = true;
+    cb(s);
+  }
+  if (typeof fetch === 'function') {
+    try {
+      var h = {
+        'Content-Type': 'application/json'
+      };
+      if (tok) h['Authorization'] = 'Bearer ' + tok;
+      fetch(url, {
+        method: 'POST',
+        headers: h,
+        body: body,
+        keepalive: true
+      }).then(function (r) {
+        once(r.status);
+      }).catch(function () {
+        once(0);
+      });
+      return;
+    } catch (e) {/* fall through to XHR */}
+  }
+  try {
+    var x = new XMLHttpRequest();
+    x.open('POST', url, true);
+    x.setRequestHeader('Content-Type', 'application/json');
+    if (tok) x.setRequestHeader('Authorization', 'Bearer ' + tok);
+    x.onreadystatechange = function () {
+      if (x.readyState === 4) once(x.status || 0);
+    };
+    x.onerror = function () {
+      once(0);
+    };
+    x.send(body);
+  } catch (e) {
+    once(0);
+  }
+}
+
+/* done(ok) is called exactly once, after all retries are exhausted.
+   ok === true only on an HTTP 200 — that is the ONLY path to the success screen. */
+function postConsent(consent, attempt, done) {
+  try {
+    apiChoice = consent;
+    var id = cspId();
+    if (!id) {
+      apiState('skipped', 'no_csp_id');
       done(false);
+      return;
     }
-  }
-
-  function dismissInApp(){
-    try{
-      if (window.CleverTap && typeof window.CleverTap.dismissInAppNotification === 'function'){
-        window.CleverTap.dismissInAppNotification(); return;
+    apiState('saving');
+    sendConsent(id, cspJwt(), consent, function (status) {
+      apiHttp = status;
+      if (status >= 200 && status < 300) {
+        apiState('ok');
+        done(true);
+        return;
       }
-    }catch(e){}
-    try{
-      var wk = window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.clevertap;
-      if (wk){ wk.postMessage({ action:'dismissInAppNotification' }); return; }
-    }catch(e){}
-    try{ history.back(); }catch(e){}
+      /* retry transport failures and 5xx, never a 4xx */
+      if ((status === 0 || status >= 500) && attempt < 3) {
+        setTimeout(function () {
+          postConsent(consent, attempt + 1, done);
+        }, 800 * attempt);
+        return;
+      }
+      apiState('error', status ? 'http_' + status : 'network');
+      done(false);
+    });
+  } catch (e) {
+    apiState('error', 'exception');
+    done(false);
   }
-
-  /* single terminal event — covers the CTA exit and the swipe-away/backgrounded case */
-  function closeOut(reason){
-    if (ended) return;
-    ended = true;
-    track('Closed', {
-      exit: reason,
-      choice: confirmed || 'none',
-      last_selected: lastSelected || 'none',
-      reached_choice: reachedChoice,
-      lang: lang,
-      lang_toggles: langToggles,
-      seconds: secs(),
-      id_source: ID_SRC,
-      api_status: apiStatus,      /* idle | saving | ok | error | skipped */
-      api_error: apiErr || 'none',
-      api_http: apiHttp
-    });
-  }
-
-  let lang = 'hi';
-  let selected = null;
-  let confirmed = null;
-  let confirmedDate = null;
-
-  const btn = document.getElementById('confirmBtn');
-  const optNew = document.getElementById('optNew');
-  const optLater = document.getElementById('optLater');
-  const confirmNew = document.getElementById('confirmNew');
-  const confirmLater = document.getElementById('confirmLater');
-  const toggle = document.getElementById('langToggle');
-
-  function render(){
-    const s = STR[lang];
-    document.documentElement.lang = lang;
-    document.title = s.docTitle;
-    document.querySelectorAll('[data-i18n]').forEach(el => {
-      const v = s[el.getAttribute('data-i18n')];
-      if (v !== undefined) el.innerHTML = v;
-    });
-    document.querySelectorAll('[data-i18n-aria]').forEach(el => {
-      const v = s[el.getAttribute('data-i18n-aria')];
-      if (v !== undefined) el.setAttribute('aria-label', v);
-    });
-    document.querySelectorAll('.langtoggle').forEach(b => b.textContent = s.toggle);
-    btn.textContent = apiBusy ? s.ctaSaving : (selected ? (selected === 'new' ? s.ctaNew : s.ctaLater) : s.ctaNone);
-    var er = document.getElementById('errRetry');
-    if (er) er.textContent = apiBusy ? s.ctaSaving : s.errRetry;
-    if (confirmedDate) {
-      const effTxt = s.effPrefix + confirmedDate.getDate() + ' ' + s.months[confirmedDate.getMonth()] + ' ' + confirmedDate.getFullYear();
-      document.getElementById('effDate').textContent = effTxt;
-      document.getElementById('dpEff').textContent = effTxt;
+}
+function dismissInApp() {
+  try {
+    if (window.CleverTap && typeof window.CleverTap.dismissInAppNotification === 'function') {
+      window.CleverTap.dismissInAppNotification();
+      return;
     }
-  }
+  } catch (e) {}
+  try {
+    var wk = window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.clevertap;
+    if (wk) {
+      wk.postMessage({
+        action: 'dismissInAppNotification'
+      });
+      return;
+    }
+  } catch (e) {}
+  try {
+    history.back();
+  } catch (e) {}
+}
 
-  document.querySelectorAll('.langtoggle').forEach(b => b.addEventListener('click', () => {
+/* single terminal event — covers the CTA exit and the swipe-away/backgrounded case */
+function closeOut(reason) {
+  if (ended) return;
+  ended = true;
+  track('Closed', {
+    exit: reason,
+    choice: confirmed || 'none',
+    last_selected: lastSelected || 'none',
+    reached_choice: reachedChoice,
+    lang: lang,
+    lang_toggles: langToggles,
+    seconds: secs(),
+    id_source: ID_SRC,
+    api_status: apiStatus,
+    /* idle | saving | ok | error | skipped */
+    api_error: apiErr || 'none',
+    api_http: apiHttp
+  });
+}
+var lang = 'hi';
+var selected = null;
+var confirmed = null;
+var confirmedDate = null;
+var btn = document.getElementById('confirmBtn');
+var optNew = document.getElementById('optNew');
+var optLater = document.getElementById('optLater');
+var confirmNew = document.getElementById('confirmNew');
+var confirmLater = document.getElementById('confirmLater');
+var toggle = document.getElementById('langToggle');
+function render() {
+  var s = STR[lang];
+  document.documentElement.lang = lang;
+  document.title = s.docTitle;
+  document.querySelectorAll('[data-i18n]').forEach(function (el) {
+    var v = s[el.getAttribute('data-i18n')];
+    if (v !== undefined) el.innerHTML = v;
+  });
+  document.querySelectorAll('[data-i18n-aria]').forEach(function (el) {
+    var v = s[el.getAttribute('data-i18n-aria')];
+    if (v !== undefined) el.setAttribute('aria-label', v);
+  });
+  document.querySelectorAll('.langtoggle').forEach(function (b) {
+    return b.textContent = s.toggle;
+  });
+  btn.textContent = apiBusy ? s.ctaSaving : selected ? selected === 'new' ? s.ctaNew : s.ctaLater : s.ctaNone;
+  var er = document.getElementById('errRetry');
+  if (er) er.textContent = apiBusy ? s.ctaSaving : s.errRetry;
+  if (confirmedDate) {
+    var effTxt = s.effPrefix + confirmedDate.getDate() + ' ' + s.months[confirmedDate.getMonth()] + ' ' + confirmedDate.getFullYear();
+    document.getElementById('effDate').textContent = effTxt;
+    document.getElementById('dpEff').textContent = effTxt;
+  }
+}
+document.querySelectorAll('.langtoggle').forEach(function (b) {
+  return b.addEventListener('click', function () {
     lang = lang === 'hi' ? 'en' : 'hi';
-    langToggles++;   /* counted, not evented */
+    langToggles++; /* counted, not evented */
     render();
-  }));
-
-  const cover = document.getElementById('cover');
-  document.body.classList.add('locked');
-  document.getElementById('coverBtn').addEventListener('click', () => {
-    cover.classList.add('gone');
-    document.body.classList.remove('locked');
-    track('Progress', { milestone: 'content_opened' });
   });
+});
+var cover = document.getElementById('cover');
+document.body.classList.add('locked');
+document.getElementById('coverBtn').addEventListener('click', function () {
+  cover.classList.add('gone');
+  document.body.classList.remove('locked');
+  track('Progress', {
+    milestone: 'content_opened'
+  });
+});
 
-  /* did the CSP actually scroll down to the decision? one fire, no scroll spam */
-  if (window.IntersectionObserver) {
-    var io = new IntersectionObserver(function(entries){
-      for (var i = 0; i < entries.length; i++){
-        if (entries[i].isIntersecting){
-          reachedChoice = true;
-          track('Progress', { milestone: 'reached_choice' });
-          io.disconnect();
-        }
+/* did the CSP actually scroll down to the decision? one fire, no scroll spam */
+if (window.IntersectionObserver) {
+  var io = new IntersectionObserver(function (entries) {
+    for (var i = 0; i < entries.length; i++) {
+      if (entries[i].isIntersecting) {
+        reachedChoice = true;
+        track('Progress', {
+          milestone: 'reached_choice'
+        });
+        io.disconnect();
       }
-    }, { threshold: 0.4 });
-    io.observe(document.getElementById('choiceSection'));
-  }
-
-  function select(which){
-    selected = which;
-    confirmed = null;
-    if (which !== lastSelected) selectionChanges++;   /* counted, not evented */
-    lastSelected = which;
-    optNew.classList.toggle('selected', which === 'new');
-    optLater.classList.toggle('selected', which === 'later');
-    optNew.setAttribute('aria-checked', which === 'new');
-    optLater.setAttribute('aria-checked', which === 'later');
-    btn.disabled = false;
-    btn.classList.add('ready');
-    confirmNew.classList.remove('show');
-    confirmLater.classList.remove('show');
-    render();
-  }
-
-  function activate(el, which){
-    el.addEventListener('click', () => select(which));
-    el.addEventListener('keydown', e => {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(which); }
-    });
-  }
-  activate(optNew, 'new');
-  activate(optLater, 'later');
-
-  /* success screen — reached ONLY after an HTTP 200 (or on a decline, which makes no call) */
-  function showDone(){
-    document.getElementById('dpH').setAttribute('data-i18n', confirmed === 'new' ? 'cnH' : 'clH');
-    document.getElementById('dpP').setAttribute('data-i18n', confirmed === 'new' ? 'cnP' : 'clP');
-    document.getElementById('dpEff').style.display = confirmed === 'new' ? '' : 'none';
-    document.getElementById('dpNote').style.display = confirmed === 'new' ? '' : 'none';
-    render();
-    document.getElementById('errPage').classList.add('gone');
-    document.getElementById('donePage').classList.remove('gone');
-    document.body.classList.add('locked');
-  }
-
-  /* "कुछ गड़बड़ हो गई" — anything that is not a 200 lands here */
-  function showErr(){
-    render();
-    /* name the cause so a failed test is diagnosable on the device itself */
-    var why = document.getElementById('errWhy');
-    if (apiErr === 'no_csp_id'){ why.hidden = false; why.textContent = STR[lang].errNoId; }
-    else if (apiErr){ why.hidden = false; why.textContent = '(' + apiErr + ')'; }
-    else { why.hidden = true; }
-    document.getElementById('donePage').classList.add('gone');
-    document.getElementById('errPage').classList.remove('gone');
-    document.body.classList.add('locked');
-  }
-
-  function saveConsent(){
-    if (apiBusy) return;
-    apiBusy = true;
-    btn.disabled = true;
-    document.getElementById('errRetry').disabled = true;
-    render();
-
-    var settled = false;
-    function finish(ok){
-      if (settled) return;
-      settled = true;
-      clearTimeout(watchdog);
-      apiBusy = false;                       /* ALWAYS released — the UI can never lock up */
-      btn.disabled = false;
-      document.getElementById('errRetry').disabled = false;
-      render();
-      if (ok) showDone(); else showErr();
     }
-    /* if the request never comes back at all, fail open after 20s instead of freezing */
-    var watchdog = setTimeout(function(){ apiState('error', 'timeout'); finish(false); }, 20000);
-
-    try{ postConsent('OPTED_IN', 1, finish); }
-    catch(e){ apiState('error', 'exception'); finish(false); }
-  }
-
-  btn.addEventListener('click', () => {
-    /* "अभी नहीं" makes no API call, so a save in flight must never block it */
-    if (!selected) return;
-    if (apiBusy && selected === 'new') return;
-    confirmed = selected;
-    if (selected === 'new') confirmedDate = new Date();
-    /* the inline confirm blocks stay hidden — the full-screen page IS the confirmation.
-       Showing both duplicated the same text on the page behind the overlay. */
-    confirmNew.classList.remove('show');
-    confirmLater.classList.remove('show');
-
-    /* opt-in and decline are separate events — Confirmed is the conversion */
-    track(confirmed === 'new' ? 'Confirmed' : 'Declined', {
-      choice: confirmed,
-      lang: lang,
-      lang_toggles: langToggles,
-      selection_changes: selectionChanges,
-      reached_choice: reachedChoice,
-      seconds: secs(),
-      id_source: ID_SRC
-    });
-    /* optional profile flag for segment targeting / suppression — delete if not needed */
-    try{
-      if (window.CleverTap && typeof window.CleverTap.pushProfile === 'function'){
-        window.CleverTap.pushProfile(JSON.stringify({ Payout750_Choice: confirmed }));
-      }
-    }catch(e){}
-
-    /* OPT-IN: the backend decides which screen the CSP sees.
-       "अभी नहीं" never hits the API, so it goes straight to its confirmation. */
-    if (confirmed === 'new') saveConsent();
-    else showDone();
+  }, {
+    threshold: 0.4
   });
-
-  document.getElementById('errRetry').addEventListener('click', saveConsent);
-
-  document.getElementById('errLater').addEventListener('click', () => {
-    closeOut('save_failed');
-    setTimeout(dismissInApp, 300);
-  });
-
-  /* In the app this closes the in-app; standalone it just goes back if it can. */
-  document.getElementById('endBtn').addEventListener('click', () => {
-    closeOut('completed');
-    setTimeout(dismissInApp, 300);
-  });
-
-  /* swipe-away / backgrounded / CT's own close button — still get the terminal event */
-  document.addEventListener('visibilitychange', function(){
-    if (document.visibilityState === 'hidden') closeOut(confirmed ? 'left_after_confirm' : 'abandoned');
-  });
-  window.addEventListener('pagehide', function(){
-    closeOut(confirmed ? 'left_after_confirm' : 'abandoned');
-  });
-
+  io.observe(document.getElementById('choiceSection'));
+}
+function select(which) {
+  selected = which;
+  confirmed = null;
+  if (which !== lastSelected) selectionChanges++; /* counted, not evented */
+  lastSelected = which;
+  optNew.classList.toggle('selected', which === 'new');
+  optLater.classList.toggle('selected', which === 'later');
+  optNew.setAttribute('aria-checked', which === 'new');
+  optLater.setAttribute('aria-checked', which === 'later');
+  btn.disabled = false;
+  btn.classList.add('ready');
+  confirmNew.classList.remove('show');
+  confirmLater.classList.remove('show');
   render();
-  track('Viewed');
+}
+function activate(el, which) {
+  el.addEventListener('click', function () {
+    return select(which);
+  });
+  el.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      select(which);
+    }
+  });
+}
+activate(optNew, 'new');
+activate(optLater, 'later');
+
+/* success screen — reached ONLY after an HTTP 200 (or on a decline, which makes no call) */
+function showDone() {
+  document.getElementById('dpH').setAttribute('data-i18n', confirmed === 'new' ? 'cnH' : 'clH');
+  document.getElementById('dpP').setAttribute('data-i18n', confirmed === 'new' ? 'cnP' : 'clP');
+  document.getElementById('dpEff').style.display = confirmed === 'new' ? '' : 'none';
+  document.getElementById('dpNote').style.display = confirmed === 'new' ? '' : 'none';
+  render();
+  document.getElementById('errPage').classList.add('gone');
+  document.getElementById('donePage').classList.remove('gone');
+  document.body.classList.add('locked');
+}
+
+/* "कुछ गड़बड़ हो गई" — anything that is not a 200 lands here */
+function showErr() {
+  render();
+  /* name the cause so a failed test is diagnosable on the device itself */
+  var why = document.getElementById('errWhy');
+  if (apiErr === 'no_csp_id') {
+    why.hidden = false;
+    why.textContent = STR[lang].errNoId;
+  } else if (apiErr) {
+    why.hidden = false;
+    why.textContent = '(' + apiErr + ')';
+  } else {
+    why.hidden = true;
+  }
+  document.getElementById('donePage').classList.add('gone');
+  document.getElementById('errPage').classList.remove('gone');
+  document.body.classList.add('locked');
+}
+function saveConsent() {
+  if (apiBusy) return;
+  apiBusy = true;
+  btn.disabled = true;
+  document.getElementById('errRetry').disabled = true;
+  render();
+  var settled = false;
+  function finish(ok) {
+    if (settled) return;
+    settled = true;
+    clearTimeout(watchdog);
+    apiBusy = false; /* ALWAYS released — the UI can never lock up */
+    btn.disabled = false;
+    document.getElementById('errRetry').disabled = false;
+    render();
+    if (ok) showDone();else showErr();
+  }
+  /* if the request never comes back at all, fail open after 20s instead of freezing */
+  var watchdog = setTimeout(function () {
+    apiState('error', 'timeout');
+    finish(false);
+  }, 20000);
+  try {
+    postConsent('OPTED_IN', 1, finish);
+  } catch (e) {
+    apiState('error', 'exception');
+    finish(false);
+  }
+}
+btn.addEventListener('click', function () {
+  /* "अभी नहीं" makes no API call, so a save in flight must never block it */
+  if (!selected) return;
+  if (apiBusy && selected === 'new') return;
+  confirmed = selected;
+  if (selected === 'new') confirmedDate = new Date();
+  /* the inline confirm blocks stay hidden — the full-screen page IS the confirmation.
+     Showing both duplicated the same text on the page behind the overlay. */
+  confirmNew.classList.remove('show');
+  confirmLater.classList.remove('show');
+
+  /* opt-in and decline are separate events — Confirmed is the conversion */
+  track(confirmed === 'new' ? 'Confirmed' : 'Declined', {
+    choice: confirmed,
+    lang: lang,
+    lang_toggles: langToggles,
+    selection_changes: selectionChanges,
+    reached_choice: reachedChoice,
+    seconds: secs(),
+    id_source: ID_SRC
+  });
+  /* optional profile flag for segment targeting / suppression — delete if not needed */
+  try {
+    if (window.CleverTap && typeof window.CleverTap.pushProfile === 'function') {
+      window.CleverTap.pushProfile(JSON.stringify({
+        Payout750_Choice: confirmed
+      }));
+    }
+  } catch (e) {}
+
+  /* OPT-IN: the backend decides which screen the CSP sees.
+     "अभी नहीं" never hits the API, so it goes straight to its confirmation. */
+  if (confirmed === 'new') saveConsent();else showDone();
+});
+document.getElementById('errRetry').addEventListener('click', saveConsent);
+document.getElementById('errLater').addEventListener('click', function () {
+  closeOut('save_failed');
+  setTimeout(dismissInApp, 300);
+});
+
+/* In the app this closes the in-app; standalone it just goes back if it can. */
+document.getElementById('endBtn').addEventListener('click', function () {
+  closeOut('completed');
+  setTimeout(dismissInApp, 300);
+});
+
+/* swipe-away / backgrounded / CT's own close button — still get the terminal event */
+document.addEventListener('visibilitychange', function () {
+  if (document.visibilityState === 'hidden') closeOut(confirmed ? 'left_after_confirm' : 'abandoned');
+});
+window.addEventListener('pagehide', function () {
+  closeOut(confirmed ? 'left_after_confirm' : 'abandoned');
+});
+render();
+track('Viewed');
 </script>
