@@ -2,6 +2,18 @@
 
 Hindi/English opt-in screen for the new payout structure: **₹750 at install + ₹300 per renewal ticket**.
 
+Full working context (decisions, open items, campaign settings): **[CONTEXT.md](CONTEXT.md)**
+
+## Files
+
+| File | What |
+|---|---|
+| `optin.html` | Hosted build (this is what the link serves) |
+| `inapp.html` | CleverTap inline custom-HTML build |
+| `docs/api-contract.html` | Backend consent API contract |
+| `docs/original-untracked.html` | Design file before analytics/API were added |
+| `other/renewal750-quiz-inapp.html` | Separate creative: ₹750 renewal education + quiz in-app |
+
 **Live URL**
 
 ```

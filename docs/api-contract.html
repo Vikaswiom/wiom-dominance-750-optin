@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Dominance V1 — API Contract</title>
+    <style>
+        :root {
+            --bg: #ffffff;
+            --surface: #f8f9fa;
+            --border: #dee2e6;
+            --text: #212529;
+            --text-muted: #6c757d;
+            --primary: #0d6efd;
+            --success: #198754;
+            --warning: #ffc107;
+            --info: #0dcaf0;
+            --code-bg: #1e1e2e;
+            --code-text: #cdd6f4;
+            --method-post: #198754;
+            --method-get: #0d6efd;
+            --tag-bg: #e9ecef;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            color: var(--text);
+            background: var(--bg);
+            line-height: 1.6;
+            padding: 0;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: #fff;
+            padding: 48px 0;
+            text-align: center;
+        }
+        .header h1 { font-size: 2rem; font-weight: 700; margin-bottom: 8px; }
+        .header p { font-size: 1rem; opacity: 0.85; }
+        .header .meta {
+            margin-top: 16px;
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            font-size: 0.85rem;
+            opacity: 0.7;
+        }
+
+        .container { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
+
+        .overview {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 32px;
+        }
+        .overview h2 { font-size: 1.1rem; margin-bottom: 12px; color: var(--text); }
+        .overview table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        .overview th { text-align: left; padding: 8px 12px; background: var(--bg); border: 1px solid var(--border); font-weight: 600; white-space: nowrap; }
+        .overview td { padding: 8px 12px; border: 1px solid var(--border); }
+
+        .endpoint {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 28px;
+            overflow: hidden;
+        }
+
+        .endpoint-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 20px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .method-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: #fff;
+            min-width: 56px;
+            text-align: center;
+        }
+        .method-badge.post { background: var(--method-post); }
+        .method-badge.get { background: var(--method-get); }
+
+        .endpoint-path {
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .endpoint-desc {
+            margin-left: auto;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .endpoint-body { padding: 20px; }
+
+        .section-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            margin-top: 20px;
+        }
+        .section-title:first-child { margin-top: 0; }
+
+        .param-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; margin-bottom: 4px; }
+        .param-table th {
+            text-align: left;
+            padding: 8px 12px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+        }
+        .param-table td { padding: 8px 12px; border: 1px solid var(--border); vertical-align: top; }
+        .param-table code {
+            background: var(--tag-bg);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.825rem;
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .tag-required { background: #fce4e4; color: #c0392b; }
+        .tag-optional { background: #e8f5e9; color: #27ae60; }
+        .tag-enum { background: #e3f2fd; color: #1565c0; }
+
+        .code-block {
+            background: var(--code-bg);
+            color: var(--code-text);
+            border-radius: 6px;
+            padding: 16px 20px;
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+            font-size: 0.825rem;
+            line-height: 1.7;
+            overflow-x: auto;
+            margin-top: 8px;
+            margin-bottom: 8px;
+            position: relative;
+        }
+        .code-block .comment { color: #6c7086; }
+        .code-block .key { color: #89b4fa; }
+        .code-block .string { color: #a6e3a1; }
+        .code-block .number { color: #fab387; }
+        .code-block .bool { color: #cba6f7; }
+        .code-block .null-val { color: #9399b2; }
+
+        .curl-block {
+            background: var(--code-bg);
+            color: var(--code-text);
+            border-radius: 6px;
+            padding: 16px 20px;
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+            font-size: 0.8rem;
+            line-height: 1.7;
+            overflow-x: auto;
+            margin-top: 8px;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .response-label {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 16px;
+            margin-bottom: 4px;
+        }
+        .response-200 { background: #d1e7dd; color: #0f5132; }
+        .response-400 { background: #f8d7da; color: #842029; }
+
+        .notes {
+            background: #fff3cd;
+            border: 1px solid #ffecb5;
+            border-radius: 8px;
+            padding: 20px 24px;
+            margin-top: 32px;
+            font-size: 0.9rem;
+        }
+        .notes h3 { font-size: 1rem; margin-bottom: 10px; }
+        .notes ul { padding-left: 20px; }
+        .notes li { margin-bottom: 6px; }
+        .notes code {
+            background: rgba(0,0,0,0.06);
+            padding: 1px 5px;
+            border-radius: 3px;
+            font-size: 0.825rem;
+        }
+
+        .enum-values {
+            display: flex;
+            gap: 8px;
+            margin-top: 4px;
+        }
+        .enum-chip {
+            display: inline-block;
+            padding: 2px 10px;
+            background: #e3f2fd;
+            color: #1565c0;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+            font-weight: 600;
+        }
+
+        .divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+
+        .footer {
+            text-align: center;
+            padding: 32px 0;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            border-top: 1px solid var(--border);
+            margin-top: 40px;
+        }
+
+        @media (max-width: 640px) {
+            .endpoint-header { flex-wrap: wrap; }
+            .endpoint-desc { margin-left: 0; margin-top: 8px; }
+            .header .meta { flex-direction: column; gap: 4px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>Project Dominance V1 &mdash; API Contract</h1>
+    <p>Consent API &amp; Org Config &bull; csp-rv-service</p>
+    <div class="meta">
+        <span>Service: csp-rv-service</span>
+        <span>Base Path: /dominance</span>
+        <span>Auth: JWT + Permit.io</span>
+        <span>Version: 1.0</span>
+    </div>
+</div>
+
+<div class="container">
+
+    <!-- ── Environment Hosts ─────────────────────────────────────────── -->
+    <div class="overview">
+        <h2>Environment Base URLs</h2>
+        <table>
+            <thead>
+                <tr><th>Environment</th><th>Base URL</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="enum-chip" style="background:#fff3cd;color:#664d03;">QA</span></td>
+                    <td><code>https://csp-gateway-service-qa.i2e1agents.in</code></td>
+                </tr>
+                <tr>
+                    <td><span class="enum-chip" style="background:#d1e7dd;color:#0f5132;">PROD</span></td>
+                    <td><code>https://csp-api.i2e1.in</code></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ── Overview ──────────────────────────────────────────────────── -->
+    <div class="overview">
+        <h2>Endpoints Overview</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Method</th>
+                    <th>Path</th>
+                    <th>Description</th>
+                    <th>Permission</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="method-badge post">POST</span></td>
+                    <td><code>/dominance/consent</code></td>
+                    <td>Submit consent choice</td>
+                    <td><code>DOMINANCE_ENROLLMENT:SUBMIT_CONSENT</code></td>
+                </tr>
+                <tr>
+                    <td><span class="method-badge get">GET</span></td>
+                    <td><code>/dominance/consent/{cspId}</code></td>
+                    <td>Check enrollment status</td>
+                    <td><code>DOMINANCE_ENROLLMENT:VIEW_CONSENT_STATUS</code></td>
+                </tr>
+                <tr>
+                    <td><span class="method-badge get">GET</span></td>
+                    <td><code>/dominance/config</code></td>
+                    <td>Get payout &amp; validity config</td>
+                    <td><code>DOMINANCE_ENROLLMENT:VIEW_CONFIG</code></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ── Enums ─────────────────────────────────────────────────────── -->
+    <div class="overview">
+        <h2>Enum Values</h2>
+        <table>
+            <thead>
+                <tr><th>Field</th><th>Allowed Values</th><th>Description</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>consent_choice</code></td>
+                    <td>
+                        <span class="enum-chip">OPTED_IN</span>
+                        <span class="enum-chip">NOT_NOW</span>
+                    </td>
+                    <td>CSP's consent decision</td>
+                </tr>
+                <tr>
+                    <td><code>enrollment_source</code></td>
+                    <td>
+                        <span class="enum-chip">SELF_SERVE</span>
+                        <span class="enum-chip">SEED</span>
+                    </td>
+                    <td>How the CSP was enrolled (read-only, set by backend)</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- ENDPOINT 1: POST /dominance/consent                           -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <div class="endpoint">
+        <div class="endpoint-header">
+            <span class="method-badge post">POST</span>
+            <span class="endpoint-path">/dominance/consent</span>
+            <span class="endpoint-desc">Submit consent choice</span>
+        </div>
+        <div class="endpoint-body">
+
+            <div class="section-title">Request Body</div>
+            <table class="param-table">
+                <thead>
+                    <tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>csp_id</code></td>
+                        <td><code>string</code></td>
+                        <td><span class="tag tag-required">Required</span></td>
+                        <td>CSP identifier (e.g. <code>a0b5n3</code>)</td>
+                    </tr>
+                    <tr>
+                        <td><code>consent_choice</code></td>
+                        <td><code>string</code></td>
+                        <td><span class="tag tag-required">Required</span></td>
+                        <td><span class="tag tag-enum">Enum</span> &nbsp; <code>OPTED_IN</code> | <code>NOT_NOW</code></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="section-title">Example Request</div>
+            <div class="code-block">{
+  <span class="key">"csp_id"</span>: <span class="string">"a0b5n3"</span>,
+  <span class="key">"consent_choice"</span>: <span class="string">"OPTED_IN"</span>
+}</div>
+
+            <div class="section-title">cURL &mdash; QA</div>
+            <div class="curl-block">curl -X POST https://csp-gateway-service-qa.i2e1agents.in/dominance/consent \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer &lt;JWT_TOKEN&gt;" \
+  -d '{"csp_id": "a0b5n3", "consent_choice": "OPTED_IN"}'</div>
+
+            <div class="section-title">cURL &mdash; PROD</div>
+            <div class="curl-block">curl -X POST https://csp-api.i2e1.in/dominance/consent \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer &lt;JWT_TOKEN&gt;" \
+  -d '{"csp_id": "a0b5n3", "consent_choice": "OPTED_IN"}'</div>
+
+            <div class="section-title">Response Fields</div>
+            <table class="param-table">
+                <thead>
+                    <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>csp_id</code></td><td><code>string</code></td><td>CSP identifier</td></tr>
+                    <tr><td><code>consent_choice</code></td><td><code>string</code></td><td><code>OPTED_IN</code> or <code>NOT_NOW</code></td></tr>
+                    <tr><td><code>enrollment_source</code></td><td><code>string</code></td><td><code>SELF_SERVE</code> (new) or <code>SEED</code> (pre-enrolled)</td></tr>
+                    <tr><td><code>consent_timestamp</code></td><td><code>ISO 8601</code></td><td>Server-set timestamp of consent action</td></tr>
+                    <tr><td><code>already_enrolled</code></td><td><code>boolean</code></td><td><code>true</code> if CSP was already OPTED_IN (idempotent)</td></tr>
+                    <tr><td><code>created_at</code></td><td><code>ISO 8601</code></td><td>Row creation timestamp</td></tr>
+                </tbody>
+            </table>
+
+            <span class="response-label response-200">200 &mdash; New enrollment</span>
+            <div class="code-block">{
+  <span class="key">"csp_id"</span>: <span class="string">"a0b5n3"</span>,
+  <span class="key">"consent_choice"</span>: <span class="string">"OPTED_IN"</span>,
+  <span class="key">"enrollment_source"</span>: <span class="string">"SELF_SERVE"</span>,
+  <span class="key">"consent_timestamp"</span>: <span class="string">"2026-08-17T10:30:01Z"</span>,
+  <span class="key">"already_enrolled"</span>: <span class="bool">false</span>,
+  <span class="key">"created_at"</span>: <span class="string">"2026-08-17T10:30:01Z"</span>
+}</div>
+
+            <span class="response-label response-200">200 &mdash; Idempotent re-submit (already enrolled)</span>
+            <div class="code-block">{
+  <span class="key">"csp_id"</span>: <span class="string">"a0a7g7"</span>,
+  <span class="key">"consent_choice"</span>: <span class="string">"OPTED_IN"</span>,
+  <span class="key">"enrollment_source"</span>: <span class="string">"SEED"</span>,
+  <span class="key">"consent_timestamp"</span>: <span class="string">"2026-08-01T00:00:00Z"</span>,
+  <span class="key">"already_enrolled"</span>: <span class="bool">true</span>,
+  <span class="key">"created_at"</span>: <span class="string">"2026-08-01T00:00:00Z"</span>
+}</div>
+
+            <span class="response-label response-200">200 &mdash; Decline (NOT_NOW)</span>
+            <div class="code-block">{
+  <span class="key">"csp_id"</span>: <span class="string">"a0b5n3"</span>,
+  <span class="key">"consent_choice"</span>: <span class="string">"NOT_NOW"</span>,
+  <span class="key">"enrollment_source"</span>: <span class="string">"SELF_SERVE"</span>,
+  <span class="key">"consent_timestamp"</span>: <span class="string">"2026-08-17T10:30:01Z"</span>,
+  <span class="key">"already_enrolled"</span>: <span class="bool">false</span>,
+  <span class="key">"created_at"</span>: <span class="string">"2026-08-17T10:30:01Z"</span>
+}</div>
+
+            <span class="response-label response-400">400 &mdash; Validation error</span>
+            <div class="code-block">{
+  <span class="key">"error_code"</span>: <span class="string">"VALIDATION_FAILED"</span>,
+  <span class="key">"message"</span>: <span class="string">"Request validation failed"</span>,
+  <span class="key">"correlation_id"</span>: <span class="null-val">null</span>,
+  <span class="key">"timestamp"</span>: <span class="string">"2026-08-17T10:30:01Z"</span>,
+  <span class="key">"field_errors"</span>: {
+    <span class="key">"csp_id"</span>: <span class="string">"must not be blank"</span>,
+    <span class="key">"consent_choice"</span>: <span class="string">"must not be blank"</span>
+  }
+}</div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- ENDPOINT 2: GET /dominance/consent/{cspId}                    -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <div class="endpoint">
+        <div class="endpoint-header">
+            <span class="method-badge get">GET</span>
+            <span class="endpoint-path">/dominance/consent/{cspId}</span>
+            <span class="endpoint-desc">Check enrollment status</span>
+        </div>
+        <div class="endpoint-body">
+
+            <div class="section-title">Path Parameters</div>
+            <table class="param-table">
+                <thead>
+                    <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>cspId</code></td>
+                        <td><code>string</code></td>
+                        <td><span class="tag tag-required">Required</span></td>
+                        <td>CSP identifier (e.g. <code>a0b5n3</code>)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="section-title">cURL &mdash; QA</div>
+            <div class="curl-block">curl -X GET https://csp-gateway-service-qa.i2e1agents.in/dominance/consent/a0b5n3 \
+  -H "Authorization: Bearer &lt;JWT_TOKEN&gt;"</div>
+
+            <div class="section-title">cURL &mdash; PROD</div>
+            <div class="curl-block">curl -X GET https://csp-api.i2e1.in/dominance/consent/a0b5n3 \
+  -H "Authorization: Bearer &lt;JWT_TOKEN&gt;"</div>
+
+            <div class="section-title">Response Fields</div>
+            <table class="param-table">
+                <thead>
+                    <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>csp_id</code></td><td><code>string</code></td><td>CSP identifier</td></tr>
+                    <tr><td><code>enrolled</code></td><td><code>boolean</code></td><td><code>true</code> if CSP is currently OPTED_IN</td></tr>
+                    <tr><td><code>consent_choice</code></td><td><code>string | null</code></td><td>Last recorded choice, or <code>null</code> if no record</td></tr>
+                    <tr><td><code>enrollment_source</code></td><td><code>string | null</code></td><td>How enrolled, or <code>null</code> if no record</td></tr>
+                    <tr><td><code>consent_timestamp</code></td><td><code>ISO 8601 | null</code></td><td>When consent was given, or <code>null</code></td></tr>
+                </tbody>
+            </table>
+
+            <span class="response-label response-200">200 &mdash; Enrolled CSP</span>
+            <div class="code-block">{
+  <span class="key">"csp_id"</span>: <span class="string">"a0a7g7"</span>,
+  <span class="key">"enrolled"</span>: <span class="bool">true</span>,
+  <span class="key">"consent_choice"</span>: <span class="string">"OPTED_IN"</span>,
+  <span class="key">"enrollment_source"</span>: <span class="string">"SEED"</span>,
+  <span class="key">"consent_timestamp"</span>: <span class="string">"2026-08-01T00:00:00Z"</span>
+}</div>
+
+            <span class="response-label response-200">200 &mdash; No record</span>
+            <div class="code-block">{
+  <span class="key">"csp_id"</span>: <span class="string">"a0z9z9"</span>,
+  <span class="key">"enrolled"</span>: <span class="bool">false</span>,
+  <span class="key">"consent_choice"</span>: <span class="null-val">null</span>,
+  <span class="key">"enrollment_source"</span>: <span class="null-val">null</span>,
+  <span class="key">"consent_timestamp"</span>: <span class="null-val">null</span>
+}</div>
+
+            <span class="response-label response-200">200 &mdash; Declined (NOT_NOW)</span>
+            <div class="code-block">{
+  <span class="key">"csp_id"</span>: <span class="string">"a0b5n3"</span>,
+  <span class="key">"enrolled"</span>: <span class="bool">false</span>,
+  <span class="key">"consent_choice"</span>: <span class="string">"NOT_NOW"</span>,
+  <span class="key">"enrollment_source"</span>: <span class="string">"SELF_SERVE"</span>,
+  <span class="key">"consent_timestamp"</span>: <span class="string">"2026-08-17T10:30:01Z"</span>
+}</div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- ENDPOINT 3: GET /dominance/config                             -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <div class="endpoint">
+        <div class="endpoint-header">
+            <span class="method-badge get">GET</span>
+            <span class="endpoint-path">/dominance/config</span>
+            <span class="endpoint-desc">Get payout &amp; validity parameters</span>
+        </div>
+        <div class="endpoint-body">
+
+            <div class="section-title">cURL &mdash; QA</div>
+            <div class="curl-block">curl -X GET https://csp-gateway-service-qa.i2e1agents.in/dominance/config \
+  -H "Authorization: Bearer &lt;JWT_TOKEN&gt;"</div>
+
+            <div class="section-title">cURL &mdash; PROD</div>
+            <div class="curl-block">curl -X GET https://csp-api.i2e1.in/dominance/config \
+  -H "Authorization: Bearer &lt;JWT_TOKEN&gt;"</div>
+
+            <div class="section-title">Response Fields</div>
+            <table class="param-table">
+                <thead>
+                    <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>payout_amount_paise</code></td><td><code>number</code></td><td>Dominance payout amount in paise (C-01). Default: <code>75000</code></td></tr>
+                    <tr><td><code>validity_window_days</code></td><td><code>number</code></td><td>Dominance validity window in days (C-02). Default: <code>90</code></td></tr>
+                </tbody>
+            </table>
+
+            <span class="response-label response-200">200</span>
+            <div class="code-block">{
+  <span class="key">"payout_amount_paise"</span>: <span class="number">75000</span>,
+  <span class="key">"validity_window_days"</span>: <span class="number">90</span>
+}</div>
+        </div>
+    </div>
+
+    <!-- ── Behaviour Notes ───────────────────────────────────────────── -->
+    <div class="notes">
+        <h3>Behaviour Notes for FE</h3>
+        <ul>
+            <li>All JSON fields use <code>snake_case</code> naming.</li>
+            <li>All timestamps are <strong>ISO 8601 UTC</strong> (e.g. <code>2026-08-17T10:30:01Z</code>).</li>
+            <li><code>consent_timestamp</code> is set <strong>server-side</strong> &mdash; do not send it in the request.</li>
+            <li><code>consent_choice</code> accepts exactly two values: <code>OPTED_IN</code> or <code>NOT_NOW</code>.</li>
+            <li>A CSP who previously chose <code>NOT_NOW</code> can later call POST again with <code>OPTED_IN</code> &mdash; the row gets updated.</li>
+            <li>An already <code>OPTED_IN</code> CSP receives an idempotent <code>200</code> with <code>already_enrolled: true</code>. No error is thrown.</li>
+            <li>An <code>OPTED_IN</code> CSP <strong>cannot revert</strong> to <code>NOT_NOW</code> via this API (no self-serve opt-out).</li>
+            <li>The <code>enrolled</code> field in the GET status response is a convenience boolean: <code>true</code> when <code>consent_choice == OPTED_IN</code>.</li>
+            <li>Config values (<code>payout_amount_paise</code>, <code>validity_window_days</code>) are runtime-configurable by Product. Always fetch fresh.</li>
+        </ul>
+    </div>
+
+    <div class="footer">
+        Project Dominance V1 &bull; Ticket #1472 &bull; csp-rv-service &bull; Generated August 2026
+    </div>
+</div>
+
+</body>
+</html>
