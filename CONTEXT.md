@@ -133,6 +133,36 @@ Vikaswiom/wiom-projects-archive -> dominance-750-optin/
 
 For the CleverTap segment, map CSP ID -> CT identity via `PROD_DB.CLEVERTAP_CSP_API.PROFILE_DATA`.
 
+## 6c. Device / WebView hard-won lessons (17 Aug 2026)
+
+The flow logic was right early; every late bug was a **WebView-vs-Chrome** difference. Chrome-only
+verification is not sufficient — test the old-WebView path too.
+
+- **`fetch` may not exist.** On an older Android WebView the direct `fetch()` call threw
+  *synchronously*, the response callback never ran, `apiBusy` stayed true and BOTH buttons went
+  dead. Now: `sendConsent()` falls back to `XMLHttpRequest`, `saveConsent()` releases `apiBusy`
+  through one guarded `finish()` inside try/catch, and a **20s watchdog** fails to the error screen
+  if nothing returns. The UI can no longer lock.
+- **Never hide overlays with `opacity`/`visibility` transitions** — some WebViews fail to repaint
+  the faded-in fixed layer and the page ghosts through, looking "transparent". Use `display:none`.
+- **No desktop inset on full-screen overlays.** `top:24px; bottom:24px` let the taller page content
+  behind peek through the gap on wide viewports.
+- **One confirmation only.** The old inline `.confirm` blocks plus the full-screen page duplicated
+  the same text on the page behind the overlay.
+- **cspId is captured once at load** (`CSP_ID_AT_LOAD`, mirrored to sessionStorage) and reused for
+  the whole flow, so a URL rewrite / reload mid-flow cannot lose it. `id_source`
+  (`url|window|session|none`) rides on the events so you can see how often the fallback saved it.
+  sessionStorage NOT localStorage — a stale id must never enrol the wrong CSP.
+- **Build stamp.** Every screen shows a small `build N` bottom-left. A photo from a device
+  identifies the exact build; if it is not the latest, it is a cached page. **Bump it on every
+  deploy.**
+- **GitHub Pages sends `cache-control: max-age=600`** — a WebView will serve a 10-minute-stale copy
+  without contacting the server. Always test with a fresh cache-buster (`&v=N`), and expect
+  ~45-150s for a push to become visible.
+- **`diag.html`** (same repo, same URL prefix) dumps what the device's WebView actually supports:
+  opaque-overlay hit test, `100dvh`, CSS vars, fetch, CleverTap bridge, the parsed cspId, and
+  whether the QA API is reachable. Ask for a screenshot of it before debugging blind.
+
 ## 7. Campaign settings
 
 Layout **Cover** (not interstitial — a full-bleed creative gets letterboxed otherwise).
