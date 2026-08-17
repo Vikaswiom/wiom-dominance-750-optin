@@ -1,0 +1,39 @@
+# Wiom — Project Dominance ₹750 Opt-in (CSP)
+
+Hindi/English opt-in screen for the new payout structure: **₹750 at install + ₹300 per renewal ticket**.
+
+**Live URL**
+
+```
+https://vikaswiom.github.io/wiom-dominance-750-optin/optin.html?cspId=<CSP_ID>
+```
+
+## URL / runtime contract
+
+| Input | How | Notes |
+|---|---|---|
+| CSP id | `?cspId=` (also accepts `?csp_id=`) or `window.CSP_ID` | required for the consent POST |
+| JWT | `?token=` (also `?jwt=`) or `window.CSP_JWT` | sent as `Authorization: Bearer <jwt>` |
+
+Without a CSP id the page still works end-to-end; the POST is skipped and reported as
+`api_status = skipped`.
+
+## Backend
+
+`POST https://csp-api.i2e1.in/dominance/consent` with `{"csp_id": "...", "consent_choice": "OPTED_IN"}`
+— fired **only** when the CSP confirms the new structure. "अभी नहीं" is a UI-only decline and
+makes no API call. Retries 3x on network/5xx, never on 4xx. QA host:
+`https://csp-gateway-service-qa.i2e1agents.in` (one constant at the top of the script).
+
+The gateway must allow the `https://vikaswiom.github.io` origin for the fetch to succeed.
+
+## CleverTap events (4 names, max 6 fires per user)
+
+| Event | When | Key properties |
+|---|---|---|
+| `Payout750_Viewed` | page load | — |
+| `Payout750_Progress` | <=2x | `milestone`: `content_opened`, `reached_choice` |
+| `Payout750_Confirmed` | confirm tap (conversion) | `choice`, `lang`, `lang_toggles`, `selection_changes`, `seconds` |
+| `Payout750_Closed` | terminal | `exit`, `choice`, `last_selected`, `api_status`, `api_error`, `api_http` |
+
+Language toggles and radio selections are counted into properties rather than fired as events.
