@@ -900,14 +900,11 @@
   btn.addEventListener('click', () => {
     if (!selected || apiBusy) return;
     confirmed = selected;
-    if (selected === 'new') {
-      confirmedDate = new Date();
-      confirmNew.classList.add('show');
-      confirmLater.classList.remove('show');
-    } else {
-      confirmLater.classList.add('show');
-      confirmNew.classList.remove('show');
-    }
+    if (selected === 'new') confirmedDate = new Date();
+    /* the inline confirm blocks stay hidden — the full-screen page IS the confirmation.
+       Showing both duplicated the same text on the page behind the overlay. */
+    confirmNew.classList.remove('show');
+    confirmLater.classList.remove('show');
 
     /* opt-in and decline are separate events — Confirmed is the conversion */
     track(confirmed === 'new' ? 'Confirmed' : 'Declined', {
