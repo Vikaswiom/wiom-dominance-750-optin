@@ -319,7 +319,7 @@
   }
 </style>
 
-<span class="buildstamp">build 8</span>
+<span class="buildstamp">build 9</span>
 <div class="phone">
   <div class="cover" id="cover">
     <button class="langtoggle clang" id="langToggle2" aria-label="Switch language">English</button>
@@ -735,6 +735,17 @@ var apiStatus = 'idle',
   apiHttp = 0,
   apiChoice = null,
   apiBusy = false;
+/* Tolerant id lookup: accepts ?cspId= &cspId= #cspId= ?cspid= ?CSPID= ?csp_id=
+   anywhere in the URL, so however the app appends it, we find it. URLSearchParams is
+   missing on some old WebViews, hence the plain regex over href. */
+function urlCspId() {
+  try {
+    var m = /[?&#/]csp[_-]?id=([^&#?/]+)/i.exec(location.href || '');
+    return m ? decodeURIComponent(m[1]).replace(/^\s+|\s+$/g, '') : '';
+  } catch (e) {
+    return '';
+  }
+}
 function qp(name) {
   try {
     return new URLSearchParams(location.search).get(name) || '';
@@ -765,7 +776,7 @@ var CSP_ID_AT_LOAD = function () {
   var v = window.CSP_ID || '';
   if (v) ID_SRC = 'window';
   if (!v) {
-    v = qp('cspId') || qp('csp_id') || '';
+    v = urlCspId() || qp('cspId') || qp('csp_id') || '';
     if (v) ID_SRC = 'url';
   }
   if (!v) {
