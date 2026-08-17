@@ -319,7 +319,7 @@
   }
 </style>
 
-<span class="buildstamp">build 5</span>
+<span class="buildstamp">build 6</span>
 <div class="phone">
   <div class="cover" id="cover">
     <button class="langtoggle clang" id="langToggle2" aria-label="Switch language">English</button>
@@ -793,6 +793,7 @@
       lang: lang,
       lang_toggles: langToggles,
       seconds: secs(),
+      id_source: ID_SRC,
       api_status: apiStatus,      /* idle | saving | ok | error | skipped */
       api_error: apiErr || 'none',
       api_http: apiHttp
@@ -943,7 +944,8 @@
       lang_toggles: langToggles,
       selection_changes: selectionChanges,
       reached_choice: reachedChoice,
-      seconds: secs()
+      seconds: secs(),
+      id_source: ID_SRC
     });
     /* optional profile flag for segment targeting / suppression — delete if not needed */
     try{
