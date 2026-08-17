@@ -232,13 +232,14 @@
   .donepage{
     position:fixed; top:0; left:50%; transform:translateX(-50%);
     width:100%; max-width:420px; height:100%; height:100dvh; z-index:30;
-    background:var(--white); color:var(--n900);
-    display:flex; flex-direction:column;
-    transition:opacity .35s, visibility .35s;
+    background:var(--white,#fff); color:var(--n900);
+    display:flex; flex-direction:column; overflow-y:auto;
   }
   /* NOTE: no desktop inset on the full-screen overlays. An inset cover lets the page
      content behind it peek through the gap on tall viewports. Full-bleed always. */
-  .donepage.gone{ opacity:0; visibility:hidden; pointer-events:none; }
+  /* display:none, NOT opacity/visibility — some Android WebViews fail to repaint a
+     faded-in fixed layer and the page behind ghosts through it. */
+  .donepage.gone{ display:none; }
   .dbody{
     flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
     text-align:center; gap:14px; padding:24px 28px;
@@ -274,12 +275,11 @@
   .cover{
     position:fixed; top:0; bottom:0; left:50%; transform:translateX(-50%);
     width:100%; max-width:420px; z-index:30;
-    background:var(--brand-sec); color:var(--white);
+    background:var(--brand-sec,#443152); color:var(--white,#fff);
     display:flex; flex-direction:column; align-items:center; justify-content:center;
-    text-align:center; gap:14px; padding:32px 28px;
-    transition:opacity .35s, visibility .35s;
+    text-align:center; gap:14px; padding:32px 28px; overflow-y:auto;
   }
-  .cover.gone{ opacity:0; visibility:hidden; pointer-events:none; }
+  .cover.gone{ display:none; }
   .cover .clang{ position:absolute; top:16px; right:16px; margin-left:0; }
   .cover .ceyebrow{
     font-size:12px; font-weight:600; letter-spacing:1px; text-transform:uppercase;
