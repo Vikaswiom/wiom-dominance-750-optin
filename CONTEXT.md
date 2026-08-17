@@ -78,8 +78,11 @@ Bridge details (learned the hard way, see the memory notes):
 `POST {base}/dominance/consent` — `{"csp_id": "...", "consent_choice": "OPTED_IN"}`
 
 - Fires **only** on opt-in. "अभी नहीं" makes **no** API call (explicit product decision).
-- PROD `https://csp-api.i2e1.in` — currently active. QA `https://csp-gateway-service-qa.i2e1agents.in`
-  is a commented constant on the same line in the script (`var API = {...}`).
+- **Currently pointing at QA** `https://csp-gateway-service-qa.i2e1agents.in` for testing.
+  PROD `https://csp-api.i2e1.in` is a commented constant on the same line (`var API = {...}`).
+  ⚠️ **The Dominance API is NOT deployed on PROD yet** (17 Aug 2026: `/dominance/config` -> 404,
+  no CORS headers). Flip the constant back to PROD only after it is live there **and** has the same
+  CORS config.
 - Retries 3× with 800 ms×n back-off on network errors and 5xx. Never retries a 4xx.
 - `keepalive: true` so the request survives WebView teardown.
 - **The success screen is gated on HTTP 200.** On confirm the CTA goes to "सेव हो रहा है…" and
