@@ -260,16 +260,16 @@
   .alltasks:active{ transform:scale(.98); }
   .alltasks:focus-visible{ outline:3px solid var(--brand-300); outline-offset:2px; }
 
-  /* Consent-API status on the done page */
-  .apistat{ font-size:13px; line-height:18px; color:var(--n700); margin:0; }
-  .apistat.bad{ color:#B3261E; font-weight:700; }
-  .retrybtn{
-    margin-top:2px; border:1px solid var(--n300); border-radius:12px;
-    background:var(--white); color:var(--n800);
-    font-family:inherit; font-size:14px; font-weight:700;
-    padding:10px 20px; cursor:pointer;
+  /* Error screen */
+  .icircle.warn{ background:#FDECEA; color:#B3261E; }
+  .ghostbtn{
+    display:block; width:100%; margin-top:10px;
+    border:0; border-radius:14px; background:transparent; color:var(--n700);
+    font-family:inherit; font-size:15px; font-weight:700;
+    padding:14px; cursor:pointer;
   }
-  .retrybtn:focus-visible{ outline:3px solid var(--brand-300); outline-offset:2px; }
+  .ghostbtn:focus-visible{ outline:3px solid var(--brand-300); outline-offset:2px; }
+  .alltasks[disabled]{ background:var(--n500); cursor:default; }
 
   /* Announcement cover */
   .cover{
@@ -503,11 +503,26 @@
       <p class="dp" id="dpP" data-i18n="cnP">तरीका: <b>₹750 शुरू में + ₹300 हर रिन्यूअल टिकट पर</b></p>
       <p class="dp eff" id="dpEff"></p>
       <p class="dnote" id="dpNote" data-i18n="cnNote">यह आज के बाद लगे नए कनेक्शनों पर लागू होगा। पहले के कनेक्शन पुराने तरीके पर ही रहेंगे।</p>
-      <p class="apistat" id="apiStat" hidden></p>
-      <button class="retrybtn" id="retryBtn" hidden>फिर से कोशिश करें</button>
     </div>
     <div class="dfoot">
       <button class="alltasks" id="endBtn" data-i18n="endCta">सारे काम देखें</button>
+    </div>
+  </div>
+
+  <div class="donepage gone" id="errPage" aria-live="polite">
+    <div class="dbody">
+      <span class="icircle warn" aria-hidden="true">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/>
+        </svg>
+      </span>
+      <p class="dh" data-i18n="errH">कुछ गड़बड़ हो गई</p>
+      <p class="dp" data-i18n="errP">आपका फ़ैसला सेव नहीं हो पाया। इंटरनेट जाँचकर फिर से कोशिश करें।</p>
+      <p class="dnote" data-i18n="errNote">आपका चुनाव अभी दर्ज नहीं हुआ है।</p>
+    </div>
+    <div class="dfoot">
+      <button class="alltasks" id="errRetry" data-i18n="errRetry">फिर से कोशिश करें</button>
+      <button class="ghostbtn" id="errLater" data-i18n="errLater">बाद में करेंगे</button>
     </div>
   </div>
 </div>
@@ -560,9 +575,12 @@
       covCta: 'देखें और चुनें',
       docTitle: 'नया पेआउट तरीका — ₹750 शुरू में',
       endCta: 'सारे काम देखें',
-      apiSaving: 'आपका फ़ैसला सेव हो रहा है…',
-      apiFail: 'फ़ैसला सेव नहीं हो पाया — दोबारा कोशिश करें।',
-      apiRetry: 'फिर से कोशिश करें'
+      ctaSaving: 'सेव हो रहा है…',
+      errH: 'कुछ गड़बड़ हो गई',
+      errP: 'आपका फ़ैसला सेव नहीं हो पाया। इंटरनेट जाँचकर फिर से कोशिश करें।',
+      errNote: 'आपका चुनाव अभी दर्ज नहीं हुआ है।',
+      errRetry: 'फिर से कोशिश करें',
+      errLater: 'बाद में करेंगे'
     },
     en: {
       appTitle: 'Payout Structure',
@@ -610,9 +628,12 @@
       covCta: 'Review & choose',
       docTitle: 'New Payout Structure — ₹750 at the Start',
       endCta: 'View all tasks',
-      apiSaving: 'Saving your choice…',
-      apiFail: 'Could not save your choice — please try again.',
-      apiRetry: 'Try again'
+      ctaSaving: 'Saving…',
+      errH: 'Something went wrong',
+      errP: 'We could not save your choice. Check your internet and try again.',
+      errNote: 'Your choice has not been recorded yet.',
+      errRetry: 'Try again',
+      errLater: 'Later'
     }
   };
 
@@ -679,7 +700,7 @@
     path: '/dominance/consent'
   };
 
-  var apiStatus = 'idle', apiErr = '', apiHttp = 0, apiChoice = null;
+  var apiStatus = 'idle', apiErr = '', apiHttp = 0, apiChoice = null, apiBusy = false;
 
   function qp(name){
     try{ return new URLSearchParams(location.search).get(name) || ''; }catch(e){ return ''; }
@@ -687,26 +708,14 @@
   function cspId(){ return window.CSP_ID || qp('cspId') || qp('csp_id') || ''; }
   function cspJwt(){ return window.CSP_JWT || qp('token') || qp('jwt') || ''; }
 
-  function paintApi(){
-    var s = STR[lang];
-    var el = document.getElementById('apiStat');
-    var rb = document.getElementById('retryBtn');
-    if (!el || !rb) return;
-    if (apiStatus === 'saving'){
-      el.hidden = false; el.className = 'apistat'; el.textContent = s.apiSaving; rb.hidden = true;
-    } else if (apiStatus === 'error'){
-      el.hidden = false; el.className = 'apistat bad'; el.textContent = s.apiFail;
-      rb.hidden = false; rb.textContent = s.apiRetry;
-    } else {
-      el.hidden = true; rb.hidden = true;
-    }
-  }
-  function apiState(st, err){ apiStatus = st; if (err) apiErr = err; paintApi(); }
+  function apiState(st, err){ apiStatus = st; if (err) apiErr = err; }
 
-  function postConsent(consent, attempt){
+  /* done(ok) is called exactly once, after all retries are exhausted.
+     ok === true only on an HTTP 200 — that is the ONLY path to the success screen. */
+  function postConsent(consent, attempt, done){
     apiChoice = consent;
     var id = cspId();
-    if (!id){ apiState('skipped', 'no_csp_id'); return; }
+    if (!id){ apiState('skipped', 'no_csp_id'); done(false); return; }
     var headers = { 'Content-Type': 'application/json' };
     var tok = cspJwt();
     if (tok) headers['Authorization'] = 'Bearer ' + tok;
@@ -718,13 +727,15 @@
       keepalive: true
     }).then(function(r){
       apiHttp = r.status;
-      if (r.ok){ apiState('ok'); return; }
+      if (r.ok){ apiState('ok'); done(true); return; }
       /* retry only server-side / gateway failures, never a 4xx */
-      if (r.status >= 500 && attempt < 3){ setTimeout(function(){ postConsent(consent, attempt + 1); }, 800 * attempt); return; }
+      if (r.status >= 500 && attempt < 3){ setTimeout(function(){ postConsent(consent, attempt + 1, done); }, 800 * attempt); return; }
       apiState('error', 'http_' + r.status);
+      done(false);
     }).catch(function(){
-      if (attempt < 3){ setTimeout(function(){ postConsent(consent, attempt + 1); }, 800 * attempt); return; }
+      if (attempt < 3){ setTimeout(function(){ postConsent(consent, attempt + 1, done); }, 800 * attempt); return; }
       apiState('error', 'network');
+      done(false);
     });
   }
 
@@ -784,13 +795,14 @@
       if (v !== undefined) el.setAttribute('aria-label', v);
     });
     document.querySelectorAll('.langtoggle').forEach(b => b.textContent = s.toggle);
-    btn.textContent = selected ? (selected === 'new' ? s.ctaNew : s.ctaLater) : s.ctaNone;
+    btn.textContent = apiBusy ? s.ctaSaving : (selected ? (selected === 'new' ? s.ctaNew : s.ctaLater) : s.ctaNone);
+    var er = document.getElementById('errRetry');
+    if (er) er.textContent = apiBusy ? s.ctaSaving : s.errRetry;
     if (confirmedDate) {
       const effTxt = s.effPrefix + confirmedDate.getDate() + ' ' + s.months[confirmedDate.getMonth()] + ' ' + confirmedDate.getFullYear();
       document.getElementById('effDate').textContent = effTxt;
       document.getElementById('dpEff').textContent = effTxt;
     }
-    paintApi();
   }
 
   document.querySelectorAll('.langtoggle').forEach(b => b.addEventListener('click', () => {
@@ -846,8 +858,43 @@
   activate(optNew, 'new');
   activate(optLater, 'later');
 
+  /* success screen — reached ONLY after an HTTP 200 (or on a decline, which makes no call) */
+  function showDone(){
+    document.getElementById('dpH').setAttribute('data-i18n', confirmed === 'new' ? 'cnH' : 'clH');
+    document.getElementById('dpP').setAttribute('data-i18n', confirmed === 'new' ? 'cnP' : 'clP');
+    document.getElementById('dpEff').style.display = confirmed === 'new' ? '' : 'none';
+    document.getElementById('dpNote').style.display = confirmed === 'new' ? '' : 'none';
+    render();
+    document.getElementById('errPage').classList.add('gone');
+    document.getElementById('donePage').classList.remove('gone');
+    document.body.classList.add('locked');
+  }
+
+  /* "कुछ गड़बड़ हो गई" — anything that is not a 200 lands here */
+  function showErr(){
+    render();
+    document.getElementById('donePage').classList.add('gone');
+    document.getElementById('errPage').classList.remove('gone');
+    document.body.classList.add('locked');
+  }
+
+  function saveConsent(){
+    if (apiBusy) return;
+    apiBusy = true;
+    btn.disabled = true;
+    document.getElementById('errRetry').disabled = true;
+    render();
+    postConsent('OPTED_IN', 1, function(ok){
+      apiBusy = false;
+      btn.disabled = false;
+      document.getElementById('errRetry').disabled = false;
+      render();
+      if (ok) showDone(); else showErr();
+    });
+  }
+
   btn.addEventListener('click', () => {
-    if (!selected) return;
+    if (!selected || apiBusy) return;
     confirmed = selected;
     if (selected === 'new') {
       confirmedDate = new Date();
@@ -874,21 +921,17 @@
       }
     }catch(e){}
 
-    /* record the consent on the backend — OPT-IN ONLY. "अभी नहीं" never hits the API. */
-    if (confirmed === 'new') postConsent('OPTED_IN', 1);
-
-    /* Next page: full-screen confirmation with the right content for the choice */
-    document.getElementById('dpH').setAttribute('data-i18n', confirmed === 'new' ? 'cnH' : 'clH');
-    document.getElementById('dpP').setAttribute('data-i18n', confirmed === 'new' ? 'cnP' : 'clP');
-    document.getElementById('dpEff').style.display = confirmed === 'new' ? '' : 'none';
-    document.getElementById('dpNote').style.display = confirmed === 'new' ? '' : 'none';
-    render();
-    document.getElementById('donePage').classList.remove('gone');
-    document.body.classList.add('locked');
+    /* OPT-IN: the backend decides which screen the CSP sees.
+       "अभी नहीं" never hits the API, so it goes straight to its confirmation. */
+    if (confirmed === 'new') saveConsent();
+    else showDone();
   });
 
-  document.getElementById('retryBtn').addEventListener('click', () => {
-    if (apiChoice) postConsent(apiChoice, 1);
+  document.getElementById('errRetry').addEventListener('click', saveConsent);
+
+  document.getElementById('errLater').addEventListener('click', () => {
+    closeOut('save_failed');
+    setTimeout(dismissInApp, 300);
   });
 
   /* In the app this closes the in-app; standalone it just goes back if it can. */

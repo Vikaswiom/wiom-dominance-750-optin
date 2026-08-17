@@ -82,12 +82,23 @@ Bridge details (learned the hard way, see the memory notes):
   is a commented constant on the same line in the script (`var API = {...}`).
 - Retries 3× with 800 ms×n back-off on network errors and 5xx. Never retries a 4xx.
 - `keepalive: true` so the request survives WebView teardown.
-- CSP-facing states on the done page: "आपका फ़ैसला सेव हो रहा है…" → clears on success, or
-  "फ़ैसला सेव नहीं हो पाया" + a **फिर से कोशिश करें** button that re-posts.
+- **The success screen is gated on HTTP 200.** On confirm the CTA goes to "सेव हो रहा है…" and
+  disables; only a 200 opens the "नया तरीका चुन लिया गया" screen. Anything else — 4xx, 5xx after
+  3 retries, network failure, or no csp_id — opens the error screen **कुछ गड़बड़ हो गई** with
+  "आपका फ़ैसला सेव नहीं हो पाया… आपका चुनाव अभी दर्ज नहीं हुआ है", a **फिर से कोशिश करें** button
+  that re-posts, and a **बाद में करेंगे** button that closes (fires `Closed{exit:'save_failed'}`).
+  A CSP can therefore never see "confirmed" unless the backend actually recorded it.
+- "अभी नहीं" makes no call, so it goes straight to its own confirmation screen.
 - Outcome is reported on `Payout750_Closed` as `api_status` (`ok` / `error` / `skipped` / `idle`),
   `api_error` (`http_401`, `network`, `no_csp_id`…), `api_http`.
 - `api_status = idle` means no call was needed (a decline). `skipped` means a call was needed but
   there was no `csp_id`.
+
+**QA verification 17 Aug 2026** (`https://csp-gateway-service-qa.i2e1agents.in`): POST/GET/config all
+200. Deviations from `docs/api-contract.html` — `enrollment_source` returns **`CSP`** (not
+`SELF_SERVE`/`SEED`), `created_at` is **null** on new enrollments, and the 400 body is Spring's
+`{detail, instance, status, title, errors[]}` rather than the documented shape. None of these break
+the page (it only reads the status code), but the contract doc is stale.
 
 Contract notes that matter: re-posting `OPTED_IN` is idempotent (`already_enrolled: true`), a
 `NOT_NOW` CSP can later opt in, and an opted-in CSP **cannot** self-serve revert.
@@ -97,11 +108,13 @@ Contract notes that matter: re-posting `OPTED_IN` is idempotent (`already_enroll
 1. **`csp_id` and JWT.** Hosted build reads `?cspId=` / `?token=` (also `window.CSP_ID` /
    `window.CSP_JWT`). Inline build has no URL — the app must inject the globals, or fill
    `CSP_ID_FIXED` / `CSP_JWT_FIXED` at the top of the script. Dev team owns this.
-2. **CORS.** The hosted page calls the gateway from origin `https://vikaswiom.github.io` — must be
-   allowed. The inline in-app is worse: it runs on `about:blank`, so the request carries
-   `Origin: null` and will almost certainly fail preflight. **This is the main reason to prefer the
-   hosted URL as the in-app.**
-3. If neither is solvable, fall back to: creative records the choice in CleverTap only, and the app
+2. ~~**CORS**~~ — **RESOLVED on QA 17 Aug 2026.** Preflight and POST both return
+   `access-control-allow-origin: *`, `allow-methods: GET,POST,OPTIONS`. The wildcard also covers the
+   inline in-app's `Origin: null`. ⚠️ But `access-control-allow-headers` is **`content-type` only** —
+   if PROD starts requiring a JWT, the `Authorization` header will fail preflight and must be added
+   to that list. The same CORS config still has to be deployed on PROD.
+3. **QA has no auth at all** — an unauthenticated POST enrolls any csp_id. Must not ship to PROD that way.
+4. If identity cannot be supplied, fall back to: creative records the choice in CleverTap only, and the app
    makes the authenticated POST itself after reading the event / profile flag.
 
 ## 6b. Target cohort
