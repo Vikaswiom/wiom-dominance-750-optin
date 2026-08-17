@@ -519,6 +519,7 @@
       <p class="dh" data-i18n="errH">कुछ गड़बड़ हो गई</p>
       <p class="dp" data-i18n="errP">आपका फ़ैसला सेव नहीं हो पाया। इंटरनेट जाँचकर फिर से कोशिश करें।</p>
       <p class="dnote" data-i18n="errNote">आपका चुनाव अभी दर्ज नहीं हुआ है।</p>
+      <p class="dnote" id="errWhy" hidden></p>
     </div>
     <div class="dfoot">
       <button class="alltasks" id="errRetry" data-i18n="errRetry">फिर से कोशिश करें</button>
@@ -580,7 +581,8 @@
       errP: 'आपका फ़ैसला सेव नहीं हो पाया। इंटरनेट जाँचकर फिर से कोशिश करें।',
       errNote: 'आपका चुनाव अभी दर्ज नहीं हुआ है।',
       errRetry: 'फिर से कोशिश करें',
-      errLater: 'बाद में करेंगे'
+      errLater: 'बाद में करेंगे',
+      errNoId: 'लिंक में CSP ID नहीं मिला — ऐप से दोबारा खोलें।'
     },
     en: {
       appTitle: 'Payout Structure',
@@ -633,7 +635,8 @@
       errP: 'We could not save your choice. Check your internet and try again.',
       errNote: 'Your choice has not been recorded yet.',
       errRetry: 'Try again',
-      errLater: 'Later'
+      errLater: 'Later',
+      errNoId: 'CSP ID missing from the link — reopen it from the app.'
     }
   };
 
@@ -873,6 +876,11 @@
   /* "कुछ गड़बड़ हो गई" — anything that is not a 200 lands here */
   function showErr(){
     render();
+    /* name the cause so a failed test is diagnosable on the device itself */
+    var why = document.getElementById('errWhy');
+    if (apiErr === 'no_csp_id'){ why.hidden = false; why.textContent = STR[lang].errNoId; }
+    else if (apiErr){ why.hidden = false; why.textContent = '(' + apiErr + ')'; }
+    else { why.hidden = true; }
     document.getElementById('donePage').classList.add('gone');
     document.getElementById('errPage').classList.remove('gone');
     document.body.classList.add('locked');
