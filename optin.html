@@ -307,11 +307,19 @@
   .cover .ccta:focus-visible{ outline:3px solid var(--brand-300); outline-offset:2px; }
   body.locked{ overflow:hidden; }
 
+  /* build stamp — lets a photo from a device identify the exact build */
+  .buildstamp{
+    position:fixed; left:6px; bottom:4px; z-index:60;
+    font-size:10px; font-weight:700; letter-spacing:.5px;
+    color:rgba(128,128,128,.75); pointer-events:none;
+  }
+
   @media (prefers-reduced-motion: reduce){
     *{ transition:none !important; scroll-behavior:auto !important; }
   }
 </style>
 
+<span class="buildstamp">build 5</span>
 <div class="phone">
   <div class="cover" id="cover">
     <button class="langtoggle clang" id="langToggle2" aria-label="Switch language">English</button>

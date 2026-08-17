@@ -1,0 +1,64 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>WebView diagnostic — Dominance 750</title>
+<style>
+  body{ font-family:system-ui,-apple-system,"Noto Sans",sans-serif; margin:0; padding:14px 14px 40px; background:#fff; color:#161021; font-size:13px; }
+  h1{ font-size:16px; margin:0 0 4px; }
+  .sub{ color:#665E75; margin:0 0 14px; }
+  table{ border-collapse:collapse; width:100%; }
+  td{ border-bottom:1px solid #E8E4F0; padding:6px 4px; vertical-align:top; word-break:break-word; }
+  td:first-child{ color:#665E75; width:42%; }
+  b.ok{ color:#1B7F4B; } b.bad{ color:#B3261E; }
+  .test{ position:relative; height:120px; margin:14px 0; border:1px dashed #D7D3E0; }
+  .under{ position:absolute; inset:0; padding:8px; font-size:20px; font-weight:800; color:#D9008D; }
+  .over{ position:absolute; inset:0; background:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; }
+  .note{ background:#FFF3CD; border:1px solid #FFECB5; border-radius:8px; padding:10px; margin-top:14px; }
+</style>
+<h1>WebView diagnostic — build 5</h1>
+<p class="sub">Screenshot this whole page and send it back.</p>
+
+<div class="test">
+  <div class="under">GHOST TEXT — must NOT be visible</div>
+  <div class="over">OPAQUE OVERLAY TEST</div>
+</div>
+
+<table id="t"></table>
+
+<div class="note" id="verdict"></div>
+
+<script>
+(function(){
+  function row(k,v){ var tr=document.createElement('tr');
+    var a=document.createElement('td'); a.textContent=k;
+    var b=document.createElement('td'); b.innerHTML=v; tr.appendChild(a); tr.appendChild(b);
+    document.getElementById('t').appendChild(tr); }
+  function yn(c){ return c ? '<b class="ok">YES</b>' : '<b class="bad">NO</b>'; }
+  var u = new URLSearchParams(location.search);
+  row('page URL', location.href);
+  row('cspId in URL', u.get('cspId') || u.get('csp_id') || '<b class="bad">MISSING</b>');
+  row('window.CSP_ID', window.CSP_ID || '<b class="bad">not set</b>');
+  row('User agent', navigator.userAgent);
+  row('viewport (inner)', innerWidth + ' x ' + innerHeight);
+  row('devicePixelRatio', String(devicePixelRatio));
+  row('supports 100dvh', yn(window.CSS && CSS.supports && CSS.supports('height','100dvh')));
+  row('supports CSS vars', yn(window.CSS && CSS.supports && CSS.supports('--a','0')));
+  row('supports position:fixed', yn(window.CSS && CSS.supports && CSS.supports('position','fixed')));
+  row('supports fetch', yn(typeof fetch === 'function'));
+  row('CleverTap bridge', yn(!!(window.CleverTap && window.CleverTap.pushEvent)));
+  var ov = document.querySelector('.over');
+  var cs = getComputedStyle(ov);
+  row('overlay computed bg', cs.backgroundColor);
+  row('overlay opacity', cs.opacity);
+  var hit = document.elementFromPoint(innerWidth/2, ov.getBoundingClientRect().top + 60);
+  row('element on top at overlay centre', hit ? (hit.className || hit.tagName) : 'n/a');
+  var painting = hit && hit.className === 'over';
+  document.getElementById('verdict').innerHTML = painting
+    ? '<b class="ok">Overlay stacking is correct on this WebView.</b> If the app screen still looks see-through, it is a repaint/cache issue — force-close the app and reopen.'
+    : '<b class="bad">Overlay is NOT on top on this WebView.</b> Send this screenshot back.';
+
+  var api = 'https://csp-gateway-service-qa.i2e1agents.in/dominance/config';
+  fetch(api).then(function(r){ return r.text().then(function(x){ row('QA API reachable', '<b class="ok">' + r.status + '</b> ' + x); }); })
+            .catch(function(e){ row('QA API reachable', '<b class="bad">FAILED</b> ' + e); });
+})();
+</script>
